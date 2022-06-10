@@ -1,5 +1,6 @@
 import { createApp, type App as VueApp } from "vue";
 import { createPinia } from "pinia";
+import Maska from "maska";
 import "bootstrap";
 
 import App from "./App.vue";
@@ -14,6 +15,7 @@ const unsubscribe = auth.onAuthStateChanged(() => {
 
     app.use(createPinia());
     app.use(router);
+    app.use(Maska);
 
     app.mount("#app");
 

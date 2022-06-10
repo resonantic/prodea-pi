@@ -4,9 +4,13 @@ import { useAuthStore } from "@/stores";
 import { computed, reactive } from "@vue/reactivity";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import cidadesJson from "@/assets/municipios.json";
+import { orderBy } from "lodash";
 
 const $router = useRouter();
 const $auth = useAuthStore();
+
+const cidades = orderBy(cidadesJson, "nome");
 
 const password = ref<string>("");
 const userInfo = reactive<UserInfo>({
@@ -85,6 +89,7 @@ const onSubmit = async () => {
             v-model="userInfo.cnpj"
             class="form-control"
             id="cnpjInput"
+            v-maska="'##.###.###/####-##'"
           />
         </div>
         <div class="mb-3 col-md-7">
@@ -113,13 +118,20 @@ const onSubmit = async () => {
           />
         </div>
         <div class="mb-3 col-md-3">
-          <label for="cidadeInput" class="form-label"> Cidade </label>
-          <input
-            type="text"
+          <label for="cidadeSelect" class="form-label"> Cidade </label>
+          <select
             v-model="userInfo.cidade"
-            class="form-control"
-            id="cidadeInput"
-          />
+            class="form-select"
+            id="cidadeSelect"
+          >
+            <option
+              v-for="cidade in cidades"
+              :key="cidade.nome"
+              :value="cidade.nome + '/' + cidade.uf"
+            >
+              {{ cidade.nome }}/{{ cidade.uf }}
+            </option>
+          </select>
         </div>
         <div class="mb-3 col-md-3">
           <label for="telefoneInput" class="form-label"> Telefone </label>
@@ -128,6 +140,7 @@ const onSubmit = async () => {
             v-model="userInfo.telefone"
             class="form-control"
             id="telefoneInput"
+            v-maska="['(##) ####-####', '(##) #####-####']"
           />
         </div>
       </div>
@@ -148,25 +161,26 @@ const onSubmit = async () => {
 
       <div class="row">
         <div class="mb-3 col-md-7">
-          <label for="cpfResponsavelInput" class="form-label">
-            Nome Completo do Responsável
-          </label>
-          <input
-            type="text"
-            v-model="userInfo.cpfResponsavel"
-            class="form-control"
-            id="cpfResponsavelInput"
-          />
-        </div>
-        <div class="mb-3 col-md-5">
           <label for="nomeResponsavelInput" class="form-label">
-            CPF do Responsável
+            Nome Completo do Responsável
           </label>
           <input
             type="text"
             v-model="userInfo.nomeResponsavel"
             class="form-control"
             id="nomeResponsavelInput"
+          />
+        </div>
+        <div class="mb-3 col-md-5">
+          <label for="cpfResponsavelInput" class="form-label">
+            CPF do Responsável
+          </label>
+          <input
+            type="text"
+            v-model="userInfo.cpfResponsavel"
+            class="form-control"
+            id="cpfResponsavelInput"
+            v-maska="'###.###.###-##'"
           />
         </div>
       </div>
