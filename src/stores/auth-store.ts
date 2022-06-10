@@ -9,7 +9,7 @@ import { defineStore } from "pinia";
 import { auth } from "@/firebase";
 import router from "@/router";
 import type { FirebaseError } from "@firebase/util";
-import type { UserInfo } from "@/models/user-info";
+import { StatusAutorizacao, type UserInfo } from "@/models/user-info";
 import { useUserInfoRepo } from "@/repositories/user-info-repo";
 
 const $userInfoRepo = useUserInfoRepo();
@@ -30,7 +30,8 @@ export const useAuthStore = defineStore("auth", {
     isAdmin: (state) => !!state.currentUserInfo?.admin,
     isDoador: (state) => !!state.currentUserInfo?.doador,
     isConsumidor: (state) => !!state.currentUserInfo?.consumidor,
-    isAutorizado: (state) => !!state.currentUserInfo?.autorizado,
+    isAutorizado: (state) =>
+      state.currentUserInfo?.status == StatusAutorizacao.autorizado,
   },
 
   actions: {

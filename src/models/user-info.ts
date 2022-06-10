@@ -1,4 +1,6 @@
 export interface UserInfo {
+  email: string;
+
   cnpj: string;
   nome: string;
   endereco: string;
@@ -12,5 +14,11 @@ export interface UserInfo {
   consumidor: boolean;
   admin: boolean;
 
-  autorizado: boolean;
+  status: StatusAutorizacao;
+}
+
+export enum StatusAutorizacao {
+  aguardando = 0,
+  autorizado = 1,
+  negado = 2,
 }

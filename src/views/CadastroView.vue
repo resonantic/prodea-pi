@@ -8,9 +8,9 @@ import { useRouter } from "vue-router";
 const $router = useRouter();
 const $auth = useAuthStore();
 
-const email = ref<string>("");
 const password = ref<string>("");
 const userInfo = reactive<UserInfo>({
+  email: "",
   cnpj: "",
   nome: "",
   endereco: "",
@@ -27,8 +27,8 @@ const userInfo = reactive<UserInfo>({
 
 const canSubmit = computed(
   () =>
-    email.value != "" &&
     password.value != "" &&
+    userInfo.email != "" &&
     userInfo.cnpj != "" &&
     userInfo.nome != "" &&
     userInfo.endereco != "" &&
@@ -41,7 +41,7 @@ const canSubmit = computed(
 );
 
 const onSubmit = async () => {
-  const result = await $auth.register(email.value, password.value, userInfo);
+  const result = await $auth.register(userInfo.email, password.value, userInfo);
   if (result) {
     $router.push("/_");
   }
@@ -61,7 +61,7 @@ const onSubmit = async () => {
           <label for="emailInput" class="form-label">Email</label>
           <input
             type="email"
-            v-model="email"
+            v-model="userInfo.email"
             class="form-control"
             id="emailInput"
           />
