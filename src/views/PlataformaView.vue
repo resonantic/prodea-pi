@@ -24,10 +24,10 @@ const logout = async () => {
       v-if="canAccess"
     >
       <div class="container-fluid">
-        <div class="navbar-brand">
+        <router-link to="/" class="navbar-brand">
           <img src="@/assets/logo.svg" alt="" width="30" height="24" />
           PRODEA
-        </div>
+        </router-link>
         <button
           class="navbar-toggler"
           type="button"

@@ -22,7 +22,7 @@ const userInfo = reactive<UserInfo>({
   doador: false,
   consumidor: false,
   admin: false,
-  autorizado: false,
+  status: 0,
 });
 
 const canSubmit = computed(
