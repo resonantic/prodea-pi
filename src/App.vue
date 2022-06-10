@@ -1,17 +1,20 @@
 <script setup lang="ts">
-import { onBeforeMount } from "vue";
+import { onBeforeMount, ref } from "vue";
 import { RouterView } from "vue-router";
 import { useAuthStore } from "./stores";
 
 const $auth = useAuthStore();
+const isLoading = ref<boolean>(true);
 
 onBeforeMount(async () => {
-  await $auth.fetchUser();
+  await $auth.fetchUser(() => {
+    isLoading.value = false;
+  });
 });
 </script>
 
 <template>
-  <RouterView />
+  <RouterView v-if="!isLoading" />
 </template>
 
 <style>

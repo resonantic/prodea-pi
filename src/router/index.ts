@@ -45,7 +45,7 @@ const router = createRouter({
   ],
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   if (to.path === "/login" && auth.currentUser) {
     next("/_");
     return;

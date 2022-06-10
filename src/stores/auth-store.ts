@@ -94,18 +94,26 @@ export const useAuthStore = defineStore("auth", {
       await signOut(auth);
     },
 
-    async fetchUser() {
+    async fetchUser(afterFirstLoad: () => void) {
       await auth.setPersistence(browserLocalPersistence);
 
+      let firstLoad = true;
+
       auth.onAuthStateChanged(async (user) => {
-        this.setCurrentUser(user);
         await router.isReady();
 
         if (user) {
           const userInfo = await $userInfoRepo.getUserInfo();
+          this.setCurrentUser(user);
           this.setCurrentUserInfo(userInfo);
         } else {
+          this.setCurrentUser(null);
           this.setCurrentUserInfo(null);
+        }
+
+        if (firstLoad) {
+          afterFirstLoad();
+          firstLoad = false;
         }
 
         if (user && router.currentRoute.value.path === "/login") {
