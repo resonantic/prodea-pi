@@ -1,5 +1,5 @@
 import { auth, db } from "@/firebase";
-import type { UserInfo } from "@/models/user-info";
+import type { StatusAutorizacao, UserInfo } from "@/models/user-info";
 import {
   setDoc,
   collection,
@@ -51,6 +51,23 @@ export const useUserInfoRepo = () => ({
     return consumers;
   },
 
+  useUsersInfo() {
+    const users = ref<UserInfo[]>([]);
+    const q = query(
+      userInfoCollectionRef,
+      where("admin", "==", false),
+      orderBy("nome")
+    );
+    const close = onSnapshot(q, (snapshot) => {
+      users.value = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...(doc.data() as UserInfo),
+      }));
+    });
+    onUnmounted(close);
+    return users;
+  },
+
   async getUserInfo() {
     const userId = auth.currentUser?.uid;
 
@@ -77,5 +94,11 @@ export const useUserInfoRepo = () => ({
     } else {
       throw Error("Usuário não autenticado.");
     }
+  },
+
+  async setUserStatus(userInfo: UserInfo, status: StatusAutorizacao) {
+    const docRef = doc(userInfoCollectionRef, userInfo.id);
+    userInfo.status = status;
+    setDoc(docRef, userInfo);
   },
 });

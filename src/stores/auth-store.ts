@@ -32,6 +32,8 @@ export const useAuthStore = defineStore("auth", {
     isConsumidor: (state) => !!state.currentUserInfo?.consumidor,
     isAutorizado: (state) =>
       state.currentUserInfo?.status == StatusAutorizacao.autorizado,
+    isNegado: (state) =>
+      state.currentUserInfo?.status == StatusAutorizacao.negado,
   },
 
   actions: {

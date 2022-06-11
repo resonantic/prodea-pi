@@ -3,12 +3,16 @@ import { useAuthStore } from "@/stores";
 import { computed } from "@vue/reactivity";
 import { useRouter } from "vue-router";
 import AnalysingDisplay from "../components/AnalysingDisplay.vue";
+import DeniedDisplay from "../components/DeniedDisplay.vue";
 
 const $router = useRouter();
 const $auth = useAuthStore();
 
 const isLoggedIn = computed(() => $auth.isLoggedIn);
-const canAccess = computed(() => $auth.isAdmin || $auth.isAutorizado);
+const isAwaiting = computed(
+  () => !$auth.isAdmin && !$auth.isAutorizado && !$auth.isNegado
+);
+const isDenied = computed(() => !$auth.isAdmin && $auth.isNegado);
 const displayName = computed(() => $auth.currentUserInfo?.nome || "");
 
 const logout = async () => {
@@ -21,7 +25,7 @@ const logout = async () => {
   <div v-if="isLoggedIn">
     <nav
       class="navbar navbar-expand-md navbar-dark fixed-top bg-dark"
-      v-if="canAccess"
+      v-if="!isAwaiting && !isDenied"
     >
       <div class="container-fluid">
         <router-link to="/" class="navbar-brand">
@@ -111,12 +115,16 @@ const logout = async () => {
       </div>
     </nav>
 
-    <main class="container pt-5 mt-5" v-if="canAccess">
+    <main class="container pt-5 mt-5" v-if="!isAwaiting && !isDenied">
       <router-view />
     </main>
 
-    <div v-if="!canAccess">
+    <div v-if="isAwaiting">
       <AnalysingDisplay />
+    </div>
+
+    <div v-if="isDenied">
+      <DeniedDisplay />
     </div>
   </div>
 </template>
