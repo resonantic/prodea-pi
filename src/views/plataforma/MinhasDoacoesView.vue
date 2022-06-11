@@ -18,20 +18,20 @@ const consumerNameById = (id: string) => {
 
 const doacaoSituacao = (doacao: Doacao) => {
   if (doacao.cancelamento) {
-    return `Cancelada... Motivo: ${doacao.cancelamento}`;
+    return `Cancelada. Motivo: ${doacao.cancelamento}`;
   }
   if (doacao.entregue) {
-    return "Doação retirada ou entregue...";
+    return "Doação retirada ou entregue";
   }
   const validade = moment(`${doacao.validade} 23:59`, "DD/MM/YYYY HH:mm");
   if (validade.diff(moment()) < 0) {
-    return "Validade expirada...";
+    return "Validade expirada";
   }
   if (!doacao.idConsumidor) {
-    return "Aguardando interessados...";
+    return "Aguardando interessados";
   }
   if (doacao.idConsumidor) {
-    return "Aguardando retirada ou entrega...";
+    return "Aguardando retirada ou entrega";
   }
 };
 

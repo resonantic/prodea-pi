@@ -17,6 +17,8 @@ const doacao = reactive<Doacao>({
   linkFoto: null,
   idConsumidor: null,
   validade: "",
+  cancelamento: null,
+  entregue: false,
 });
 
 const fotoChanged = async (e: Event) => {

@@ -17,6 +17,7 @@ import {
   where,
 } from "firebase/firestore";
 import { onUnmounted, ref } from "vue";
+import moment from "moment";
 
 const doacaoCollectionRef = collection(db, "doacao");
 
@@ -61,13 +62,51 @@ export const useDoacaoRepo = () => ({
     setDoc(docRef, doacao);
   },
 
+  async setDoacaoSolicitada(doacao: Doacao) {
+    doacao.idConsumidor = auth.currentUser?.uid || null;
+
+    if (doacao.idConsumidor) {
+      const docRef = doc(doacaoCollectionRef, doacao.id);
+      setDoc(docRef, doacao);
+    } else {
+      throw Error("Usuário não autenticado.");
+    }
+  },
+
+  useDoacoesDisponiveis() {
+    const doacoes = ref<Doacao[]>([]);
+    const q = query(
+      doacaoCollectionRef,
+      where("idConsumidor", "==", null),
+      where("cancelamento", "==", null),
+      orderBy("dataDoacao", "desc")
+    );
+    const close = onSnapshot(q, (snapshot) => {
+      doacoes.value = snapshot.docs
+        .map((doc) => ({
+          id: doc.id,
+          ...(doc.data() as Doacao),
+          dataDoacao: doc.data().dataDoacao.toDate(),
+        }))
+        .filter((doacao) => {
+          const validade = moment(
+            `${doacao.validade} 23:59`,
+            "DD/MM/YYYY HH:mm"
+          );
+          return validade.diff(moment()) >= 0;
+        });
+    });
+    onUnmounted(close);
+    return doacoes;
+  },
+
   useMinhasDoacoes() {
     const userId = auth.currentUser?.uid;
     const doacoes = ref<Doacao[]>([]);
     const q = query(
       doacaoCollectionRef,
       where("idDoador", "==", userId),
-      orderBy("dataDoacao")
+      orderBy("dataDoacao", "desc")
     );
     const close = onSnapshot(q, (snapshot) => {
       doacoes.value = snapshot.docs.map((doc) => ({
@@ -86,7 +125,7 @@ export const useDoacaoRepo = () => ({
     const q = query(
       doacaoCollectionRef,
       where("idConsumidor", "==", userId),
-      orderBy("dataDoacao")
+      orderBy("dataDoacao", "desc")
     );
     const close = onSnapshot(q, (snapshot) => {
       doacoes.value = snapshot.docs

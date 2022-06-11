@@ -6,6 +6,6 @@ export interface Doacao {
   idConsumidor: null | string;
   validade: string;
   dataDoacao?: Date;
-  cancelamento?: string | null;
-  entregue?: boolean;
+  cancelamento: string | null;
+  entregue: boolean;
 }
