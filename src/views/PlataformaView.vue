@@ -43,7 +43,7 @@ const logout = async () => {
           <ul class="navbar-nav me-auto mb-2 mb-md-0">
             <li class="nav-item">
               <router-link
-                to="/_/doador"
+                to="/_/doar"
                 class="nav-link"
                 aria-current="page"
                 v-if="$auth.isDoador"
@@ -53,7 +53,7 @@ const logout = async () => {
             </li>
             <li class="nav-item">
               <router-link
-                to="/_/doador"
+                to="/_/minhas-doacoes"
                 class="nav-link"
                 aria-current="page"
                 v-if="$auth.isDoador"
@@ -63,7 +63,7 @@ const logout = async () => {
             </li>
             <li class="nav-item">
               <router-link
-                to="/_/consumidor"
+                to="/_/doacoes-disponiveis"
                 class="nav-link"
                 aria-current="page"
                 v-if="$auth.isConsumidor"
@@ -73,12 +73,22 @@ const logout = async () => {
             </li>
             <li class="nav-item">
               <router-link
-                to="/_/consumidor"
+                to="/_/doacoes-recebidas"
                 class="nav-link"
                 aria-current="page"
                 v-if="$auth.isConsumidor"
               >
                 Doações Recebidas
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link
+                to="/_/admin"
+                class="nav-link"
+                aria-current="page"
+                v-if="$auth.isAdmin"
+              >
+                Administração
               </router-link>
             </li>
             <li class="nav-item"></li>

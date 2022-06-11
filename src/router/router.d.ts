@@ -4,6 +4,9 @@ import "vue-router";
 
 declare module "vue-router" {
   interface RouteMeta {
-    requiresAuth: boolean;
+    requiresAuth?: boolean;
+    requiresDoador?: boolean;
+    requiresConsumidor?: boolean;
+    requiresAdmin?: boolean;
   }
 }
