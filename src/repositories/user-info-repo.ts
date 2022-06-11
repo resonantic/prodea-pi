@@ -26,6 +26,20 @@ export const useUserInfoRepo = () => ({
     return donators;
   },
 
+  useConsumersInfo() {
+    const consumers = ref<UserInfo[]>([]);
+    const close = onSnapshot(userInfoCollectionRef, (snapshot) => {
+      consumers.value = snapshot.docs
+        .map((doc) => ({
+          id: doc.id,
+          ...(doc.data() as UserInfo),
+        }))
+        .filter((consumer) => consumer.consumidor && consumer.status === 1);
+    });
+    onUnmounted(close);
+    return consumers;
+  },
+
   async getUserInfo() {
     const userId = auth.currentUser?.uid;
 
