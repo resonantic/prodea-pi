@@ -11,7 +11,10 @@ import {
   collection,
   doc,
   onSnapshot,
+  orderBy,
+  query,
   setDoc,
+  where,
 } from "firebase/firestore";
 import { onUnmounted, ref } from "vue";
 
@@ -61,14 +64,17 @@ export const useDoacaoRepo = () => ({
   useMinhasDoacoes() {
     const userId = auth.currentUser?.uid;
     const doacoes = ref<Doacao[]>([]);
-    const close = onSnapshot(doacaoCollectionRef, (snapshot) => {
-      doacoes.value = snapshot.docs
-        .map((doc) => ({
-          id: doc.id,
-          ...(doc.data() as Doacao),
-          dataDoacao: doc.data().dataDoacao.toDate(),
-        }))
-        .filter((doacao) => doacao.idDoador == userId);
+    const q = query(
+      doacaoCollectionRef,
+      where("idDoador", "==", userId),
+      orderBy("dataDoacao")
+    );
+    const close = onSnapshot(q, (snapshot) => {
+      doacoes.value = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...(doc.data() as Doacao),
+        dataDoacao: doc.data().dataDoacao.toDate(),
+      }));
     });
     onUnmounted(close);
     return doacoes;
@@ -77,7 +83,12 @@ export const useDoacaoRepo = () => ({
   useDoacoesRecebidas() {
     const userId = auth.currentUser?.uid;
     const doacoes = ref<Doacao[]>([]);
-    const close = onSnapshot(doacaoCollectionRef, (snapshot) => {
+    const q = query(
+      doacaoCollectionRef,
+      where("idConsumidor", "==", userId),
+      orderBy("dataDoacao")
+    );
+    const close = onSnapshot(q, (snapshot) => {
       doacoes.value = snapshot.docs
         .map((doc) => ({
           id: doc.id,

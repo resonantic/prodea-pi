@@ -6,6 +6,9 @@ import {
   doc,
   getDoc,
   onSnapshot,
+  query,
+  orderBy,
+  where,
 } from "firebase/firestore";
 import { onUnmounted, ref } from "vue";
 
@@ -14,13 +17,17 @@ const userInfoCollectionRef = collection(db, "userInfo");
 export const useUserInfoRepo = () => ({
   useDonatorsInfo() {
     const donators = ref<UserInfo[]>([]);
-    const close = onSnapshot(userInfoCollectionRef, (snapshot) => {
-      donators.value = snapshot.docs
-        .map((doc) => ({
-          id: doc.id,
-          ...(doc.data() as UserInfo),
-        }))
-        .filter((donator) => donator.doador && donator.status === 1);
+    const q = query(
+      userInfoCollectionRef,
+      where("doador", "==", true),
+      where("status", "==", 1),
+      orderBy("nome")
+    );
+    const close = onSnapshot(q, (snapshot) => {
+      donators.value = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...(doc.data() as UserInfo),
+      }));
     });
     onUnmounted(close);
     return donators;
@@ -28,13 +35,17 @@ export const useUserInfoRepo = () => ({
 
   useConsumersInfo() {
     const consumers = ref<UserInfo[]>([]);
-    const close = onSnapshot(userInfoCollectionRef, (snapshot) => {
-      consumers.value = snapshot.docs
-        .map((doc) => ({
-          id: doc.id,
-          ...(doc.data() as UserInfo),
-        }))
-        .filter((consumer) => consumer.consumidor && consumer.status === 1);
+    const q = query(
+      userInfoCollectionRef,
+      where("consumidor", "==", true),
+      where("status", "==", 1),
+      orderBy("nome")
+    );
+    const close = onSnapshot(q, (snapshot) => {
+      consumers.value = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...(doc.data() as UserInfo),
+      }));
     });
     onUnmounted(close);
     return consumers;
