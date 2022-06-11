@@ -64,6 +64,7 @@ const defineAsCancelada = async (doacao: Doacao) => {
 <template>
   <div>
     <h3 class="pb-3">Minhas Doações</h3>
+    <p v-if="doacoes.length == 0">No momento não há doaçoes efetuadas...</p>
     <div class="card mb-3" v-for="doacao in doacoes" :key="doacao.id">
       <div class="row g-0">
         <div class="col-md-4">

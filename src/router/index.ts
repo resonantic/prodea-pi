@@ -61,10 +61,10 @@ const router = createRouter({
           meta: { requiresConsumidor: true },
         },
         {
-          path: "doacoes-recebidas",
-          name: "doacoes-recebidas",
+          path: "doacoes-solicitadas",
+          name: "doacoes-solicitadas",
           component: () =>
-            import("../views/plataforma/DoacoesRecebidasView.vue"),
+            import("../views/plataforma/DoacoesSolicitadasView.vue"),
           meta: { requiresConsumidor: true },
         },
         {

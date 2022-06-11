@@ -22,7 +22,8 @@ onMounted(async () => {
 
 <style scoped>
 .crop {
-  height: 215px;
+  min-height: 215px;
+  height: inherit;
   overflow: hidden;
   position: relative;
 }
