@@ -53,7 +53,6 @@ const canDefineAsCancelada = (doacao: Doacao) => {
   if (doacao.entregue) return false;
   const validade = moment(`${doacao.validade} 23:59`, "DD/MM/YYYY HH:mm");
   if (validade.diff(moment()) < 0) return false;
-  if (!doacao.idConsumidor) return false;
   return true;
 };
 
