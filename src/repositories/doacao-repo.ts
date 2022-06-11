@@ -73,6 +73,12 @@ export const useDoacaoRepo = () => ({
     }
   },
 
+  async setDoacaoNaoSolicitada(doacao: Doacao) {
+    doacao.idConsumidor = null;
+    const docRef = doc(doacaoCollectionRef, doacao.id);
+    setDoc(docRef, doacao);
+  },
+
   useDoacoesDisponiveis() {
     const doacoes = ref<Doacao[]>([]);
     const q = query(

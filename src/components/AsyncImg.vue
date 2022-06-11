@@ -15,5 +15,25 @@ onMounted(async () => {
 </script>
 
 <template>
-  <img :src="loadedSrc" :class="props.class" />
+  <div :class="'crop ' + props.class">
+    <img :src="loadedSrc" class="img-fluid" />
+  </div>
 </template>
+
+<style scoped>
+.crop {
+  height: 215px;
+  overflow: hidden;
+  position: relative;
+}
+.crop img {
+  position: absolute;
+  left: -100%;
+  right: -100%;
+  top: -100%;
+  bottom: -100%;
+  margin: auto;
+  min-height: 100%;
+  min-width: 100%;
+}
+</style>
