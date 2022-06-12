@@ -50,20 +50,22 @@ const setNaoAutorizado = async (userInfo: UserInfo) => {
               : "Não Autorizado"
           }}
         </p>
-        <a
-          v-if="user.status == 0 || user.status == 2"
-          @click="() => setAutorizado(user)"
-          class="btn btn-success me-2"
-        >
-          Autorizar
-        </a>
-        <a
-          v-if="user.status == 0 || user.status == 1"
-          @click="() => setNaoAutorizado(user)"
-          class="btn btn-danger"
-        >
-          Negar Autorização
-        </a>
+        <div class="d-grid gap-2 d-md-block">
+          <a
+            v-if="user.status == 0 || user.status == 2"
+            @click="() => setAutorizado(user)"
+            class="btn btn-success me-md-2"
+          >
+            Autorizar
+          </a>
+          <a
+            v-if="user.status == 0 || user.status == 1"
+            @click="() => setNaoAutorizado(user)"
+            class="btn btn-danger"
+          >
+            Negar Autorização
+          </a>
+        </div>
       </div>
     </div>
   </div>

@@ -121,22 +121,24 @@ const defineAsCancelada = async (doacao: Doacao) => {
               Cidade: {{ donatorCityById(doacao.idDoador) }}
             </h6>
             <h6 class="card-text">Situação: {{ doacaoSituacao(doacao) }}</h6>
-            <a
-              @click="() => defineAsEntregue(doacao)"
-              class="btn btn-success me-2"
-              style="font-size: 0.93rem"
-              v-if="canDefineAsEntregue(doacao)"
-            >
-              Marcar como Recebida
-            </a>
-            <a
-              @click="() => defineAsCancelada(doacao)"
-              v-if="canDefineAsCancelada(doacao)"
-              class="btn btn-danger"
-              style="font-size: 0.93rem"
-            >
-              Cancelar Solicitação
-            </a>
+            <div class="d-grid gap-2 d-md-block">
+              <a
+                @click="() => defineAsEntregue(doacao)"
+                class="btn btn-success me-md-2"
+                style="font-size: 0.93rem"
+                v-if="canDefineAsEntregue(doacao)"
+              >
+                Marcar como Recebida
+              </a>
+              <a
+                @click="() => defineAsCancelada(doacao)"
+                v-if="canDefineAsCancelada(doacao)"
+                class="btn btn-danger"
+                style="font-size: 0.93rem"
+              >
+                Cancelar Solicitação
+              </a>
+            </div>
           </div>
         </div>
       </div>

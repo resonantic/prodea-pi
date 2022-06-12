@@ -90,9 +90,14 @@ const defineAsSolicited = async (doacao: Doacao) => {
             <h6 v-if="doacao.idDoador" class="card-text">
               Cidade: {{ donatorCityById(doacao.idDoador) }}
             </h6>
-            <a @click="() => defineAsSolicited(doacao)" class="btn btn-success">
-              Solicitar Doação
-            </a>
+            <div class="d-grid gap-2 d-md-block">
+              <a
+                @click="() => defineAsSolicited(doacao)"
+                class="btn btn-success"
+              >
+                Solicitar Doação
+              </a>
+            </div>
           </div>
         </div>
       </div>

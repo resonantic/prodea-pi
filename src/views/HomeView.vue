@@ -11,26 +11,28 @@
             Junho de 2020, e tem como objetivo facilitar a doação de alimentos a
             entidades beneficentes.
           </p>
-          <router-link
-            to="cadastro"
-            class="btn btn-primary btn-lg"
-            type="button"
-          >
-            Solicitar Cadastro
-          </router-link>
-          &nbsp;
-          <router-link
-            to="login"
-            class="btn btn-secondary btn-lg"
-            type="button"
-          >
-            Acessar Plataforma
-          </router-link>
+          <div class="d-grid d-md-block">
+            <router-link
+              to="cadastro"
+              class="btn btn-primary btn-lg"
+              type="button"
+            >
+              Solicitar Cadastro
+            </router-link>
+            &nbsp;
+            <router-link
+              to="login"
+              class="btn btn-secondary btn-lg"
+              type="button"
+            >
+              Acessar Plataforma
+            </router-link>
+          </div>
         </div>
       </div>
 
       <div class="row align-items-md-stretch">
-        <div class="col-md-4">
+        <div class="col-md-4 mb-2">
           <div class="h-100 p-5 bg-light border rounded-3">
             <h2>Conheça a Lei</h2>
             <p>Ainda não conhece a Lei nº 14.016/2020?</p>
@@ -45,7 +47,7 @@
           </div>
         </div>
 
-        <div class="col-md-4">
+        <div class="col-md-4 mb-2">
           <div class="h-100 p-5 bg-light border rounded-3">
             <h2>Conheça o Projeto</h2>
             <p>O que é o PRODEA?</p>
@@ -59,7 +61,7 @@
           </div>
         </div>
 
-        <div class="col-md-4">
+        <div class="col-md-4 mb-2">
           <div class="h-100 p-5 bg-light border rounded-3">
             <h2>Participantes</h2>
             <p>Conheça os participantes do projeto.</p>
