@@ -18,6 +18,7 @@ import {
 } from "firebase/firestore";
 import { onUnmounted, ref } from "vue";
 import moment from "moment";
+import { notifyError } from "@/helpers/notify";
 
 const doacaoCollectionRef = collection(db, "doacao");
 
@@ -30,7 +31,7 @@ export const useDoacaoRepo = () => ({
       const result = await uploadBytes(fotoRef, file);
       return result.ref.fullPath;
     } catch {
-      alert("Ocorreu um erro ao enviar a foto.");
+      notifyError("Ocorreu um erro ao enviar a foto.");
       return null;
     }
   },

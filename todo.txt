@@ -1,0 +1,4 @@
+- Motivo de cancelamento do doador
+- Close dropdown on change page
+- Implements loading
+- Verificar espaçamento dos botões no celular

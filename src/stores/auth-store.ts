@@ -11,6 +11,7 @@ import router from "@/router";
 import type { FirebaseError } from "@firebase/util";
 import { StatusAutorizacao, type UserInfo } from "@/models/user-info";
 import { useUserInfoRepo } from "@/repositories/user-info-repo";
+import { notifyError } from "@/helpers/notify";
 
 const $userInfoRepo = useUserInfoRepo();
 
@@ -51,13 +52,13 @@ export const useAuthStore = defineStore("auth", {
       } catch (error: unknown) {
         switch ((error as FirebaseError).code) {
           case "auth/user-not-found":
-            alert("Usuário não encontrado.");
+            notifyError("Usuário não encontrado.");
             break;
           case "auth/wrong-password":
-            alert("Senha incorreta.");
+            notifyError("Senha incorreta.");
             break;
           default:
-            alert("Ocorreu um erro inesperado.");
+            notifyError("Ocorreu um erro inesperado.");
             break;
         }
       }
@@ -72,19 +73,19 @@ export const useAuthStore = defineStore("auth", {
       } catch (error: unknown) {
         switch ((error as FirebaseError).code) {
           case "auth/email-already-in-use":
-            alert("O email informado já está em uso.");
+            notifyError("O email informado já está em uso.");
             break;
           case "auth/invalid-email":
-            alert("O email informado possui um formato inválido.");
+            notifyError("O email informado possui um formato inválido.");
             break;
           case "auth/operation-not-allowed":
-            alert("Operação não permitida.");
+            notifyError("Operação não permitida.");
             break;
           case "auth/weak-password":
-            alert("A senha informada é muito fraca.");
+            notifyError("A senha informada é muito fraca.");
             break;
           default:
-            alert("Ocorreu um erro inesperado.");
+            notifyError("Ocorreu um erro inesperado.");
             break;
         }
       }

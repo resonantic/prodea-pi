@@ -2,6 +2,7 @@
 import { onBeforeMount, ref } from "vue";
 import { RouterView } from "vue-router";
 import { useAuthStore } from "./stores";
+import ToastWrapper from "@/components/ToastWrapper.vue";
 
 const $auth = useAuthStore();
 const isLoading = ref<boolean>(true);
@@ -15,6 +16,7 @@ onBeforeMount(async () => {
 
 <template>
   <RouterView v-if="!isLoading" />
+  <ToastWrapper v-if="!isLoading" />
 </template>
 
 <style>

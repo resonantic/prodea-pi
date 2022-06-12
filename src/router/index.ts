@@ -76,6 +76,9 @@ const router = createRouter({
       ],
     },
   ],
+  scrollBehavior() {
+    return { top: 0 };
+  },
 });
 
 router.beforeEach(async (to, from, next) => {

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { notifySuccess } from "@/helpers/notify";
 import type { Doacao } from "@/models/doacao";
 import { useDoacaoRepo } from "@/repositories/doacao-repo";
 import { useUserInfoRepo } from "@/repositories/user-info-repo";
@@ -40,7 +41,7 @@ const onSubmit = async () => {
   doacao.dataDoacao = new Date();
   const result = await $doacaoRepo.createDoacao(doacao);
   if (result) {
-    alert("Doação postada com sucesso.");
+    notifySuccess("Doação postada com sucesso.");
     $router.push("/_/minhas-doacoes");
   }
 };
