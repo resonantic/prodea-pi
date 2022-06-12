@@ -41,7 +41,7 @@
       brevemente a sua história, o trabalho que é realizado, o publico alvo,
       entre outras informações que possam ser consideradas importantes.
     </p>
-    <p class="lead">
+    <p class="lead d-grid gap-2 d-md-block">
       <router-link to="/" class="btn btn-lg btn-secondary fw-bold">
         Voltar
       </router-link>

@@ -217,13 +217,16 @@ const onSubmit = async () => {
         </div>
       </div>
 
-      <button type="submit" class="btn btn-primary" :disabled="!canSubmit">
-        Solicitar Cadastro
-      </button>
-
-      &nbsp;
-
-      <router-link to="/" class="btn btn-secondary"> Voltar </router-link>
+      <div class="d-grid gap-2 d-md-block mb-3">
+        <button
+          type="submit"
+          class="btn btn-primary me-md-2"
+          :disabled="!canSubmit"
+        >
+          Solicitar Cadastro
+        </button>
+        <router-link to="/" class="btn btn-secondary"> Voltar </router-link>
+      </div>
     </form>
   </main>
 </template>

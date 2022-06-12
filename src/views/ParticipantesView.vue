@@ -23,7 +23,7 @@ const donators = $userInfoRepo.useDonatorsInfo();
         </div>
       </div>
     </div>
-    <p class="lead">
+    <p class="lead d-grid gap-2 d-md-block">
       <router-link to="/" class="btn btn-lg btn-secondary fw-bold">
         Voltar
       </router-link>

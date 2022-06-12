@@ -82,6 +82,10 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
+  [...document.querySelectorAll(".navbar-collapse.collapse")].map((el) => {
+    el.classList.remove("show");
+  });
+
   if (to.path === "/login" && auth.currentUser) {
     next("/_");
     return;
