@@ -1,6 +1,7 @@
 import { auth } from "@/firebase";
 import { useAuthStore } from "@/stores/auth-store";
 import { createRouter, createWebHistory } from "vue-router";
+import { Collapse } from "bootstrap";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -82,9 +83,11 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  [...document.querySelectorAll(".navbar-collapse.collapse")].map((el) => {
-    el.classList.remove("show");
-  });
+  const navbarEl = document.getElementById("platformNavbar");
+  if (navbarEl) {
+    const collapse = new Collapse(navbarEl);
+    collapse.hide();
+  }
 
   if (to.path === "/login" && auth.currentUser) {
     next("/_");

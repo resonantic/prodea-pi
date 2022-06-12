@@ -63,26 +63,26 @@ const onSubmit = async () => {
       Para solicitar o cadastro de sua empresa/entidade é fácil, insira todas as
       informações solicitadas abaixo:
     </p>
-    <form @submit.prevent="onSubmit">
+    <form @submit.prevent="onSubmit" autocomplete="off">
       <div class="row">
         <div class="mb-3 col-md-6">
           <label for="emailInput" class="form-label"> Email </label>
           <input
-            autocomplete="off"
             type="email"
             v-model="userInfo.email"
             class="form-control"
             id="emailInput"
+            autocomplete="off"
           />
         </div>
         <div class="mb-3 col-md-6">
           <label for="passwordInput" class="form-label"> Senha </label>
           <input
-            autocomplete="off"
             type="password"
             v-model="password"
             class="form-control"
             id="passwordInput"
+            autocomplete="new-password"
           />
         </div>
       </div>

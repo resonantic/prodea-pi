@@ -119,7 +119,9 @@ const onSubmit = async () => {
         </div>
       </div>
 
-      <button type="submit" class="btn btn-primary">Postar Doação</button>
+      <div class="d-grid gap-2 d-md-block">
+        <button type="submit" class="btn btn-primary">Postar Doação</button>
+      </div>
     </form>
   </div>
 </template>

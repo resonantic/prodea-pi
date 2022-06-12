@@ -1,3 +1,2 @@
 - Motivo de cancelamento do doador
 - Implements img loading
-- Disable cadastro autocomplete

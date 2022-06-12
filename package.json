@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.1.0",
+    "@types/bootstrap": "^5.1.12",
     "@types/lodash": "^4.14.182",
     "@types/node": "^16.11.36",
     "@vitejs/plugin-vue": "^2.3.3",
