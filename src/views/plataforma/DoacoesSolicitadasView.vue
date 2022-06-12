@@ -131,7 +131,6 @@ const defineAsCancelada = async (doacao: Doacao) => {
               <a
                 @click="() => defineAsEntregue(doacao)"
                 class="btn btn-success me-md-2"
-                style="font-size: 0.93rem"
                 v-if="canDefineAsEntregue(doacao)"
               >
                 Marcar como Recebida
@@ -140,7 +139,6 @@ const defineAsCancelada = async (doacao: Doacao) => {
                 @click="() => defineAsCancelada(doacao)"
                 v-if="canDefineAsCancelada(doacao)"
                 class="btn btn-danger"
-                style="font-size: 0.93rem"
               >
                 Cancelar Solicitação
               </a>
