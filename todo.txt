@@ -1,2 +1,1 @@
-- Motivo de cancelamento do doador
 - Implements img loading

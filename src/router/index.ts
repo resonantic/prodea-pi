@@ -84,7 +84,7 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   const navbarEl = document.getElementById("platformNavbar");
-  if (navbarEl) {
+  if (navbarEl && navbarEl.classList.contains("show")) {
     const collapse = new Collapse(navbarEl);
     collapse.hide();
   }

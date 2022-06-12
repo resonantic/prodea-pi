@@ -44,8 +44,8 @@ const onSubmit = async () => {
   doacao.dataDoacao = new Date();
   const result = await $doacaoRepo.createDoacao(doacao);
   if (result) {
-    notifySuccess("Doação postada com sucesso.");
     await $router.push("/_/minhas-doacoes");
+    notifySuccess("Doação postada com sucesso.");
   }
   $loading.stopLoading();
 };
