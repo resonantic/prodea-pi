@@ -16,10 +16,10 @@ const $toast = useToastStore();
 onMounted(() => {
   if (el.value) {
     const toast = new Toast(el.value);
-    toast.show();
     el.value.addEventListener("hidden.bs.toast", () => {
       $toast.removeToast(props.id);
     });
+    toast.show();
   }
   setTimeout(() => {
     dismiss();
