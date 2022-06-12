@@ -47,4 +47,13 @@ onBeforeMount(async () => {
   top: 0;
   opacity: 0.6 !important;
 }
+
+@media (min-width: 768px) {
+  .rounded-md-start {
+    border-bottom-left-radius: 0.25rem !important;
+    border-top-left-radius: 0.25rem !important;
+    border-bottom-right-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+  }
+}
 </style>

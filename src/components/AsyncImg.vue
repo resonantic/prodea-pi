@@ -15,7 +15,8 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div :class="'crop ' + props.class">
+  <div :class="'placeholder-glow crop ' + props.class">
+    <span class="placeholder col-12" />
     <img :src="loadedSrc" class="img-fluid" />
   </div>
 </template>
@@ -36,5 +37,8 @@ onMounted(async () => {
   margin: auto;
   min-height: 100%;
   min-width: 100%;
+}
+.placeholder {
+  height: 215px;
 }
 </style>

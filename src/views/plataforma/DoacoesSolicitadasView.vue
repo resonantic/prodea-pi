@@ -109,7 +109,7 @@ const defineAsCancelada = async (doacao: Doacao) => {
         <AsyncImg
           v-if="doacao.linkFoto"
           :src="() => $doacaoRepo.getFotoLink(doacao.linkFoto!)"
-          class="col-md-4 img-fluid rounded-start"
+          class="col-md-4 img-fluid rounded-top rounded-md-start"
         />
         <div class="col-md-8">
           <div class="card-body">

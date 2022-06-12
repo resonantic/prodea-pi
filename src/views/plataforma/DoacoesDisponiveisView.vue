@@ -76,7 +76,7 @@ const defineAsSolicited = async (doacao: Doacao) => {
           <AsyncImg
             v-if="doacao.linkFoto"
             :src="() => $doacaoRepo.getFotoLink(doacao.linkFoto!)"
-            class="img-fluid rounded-start"
+            class="img-fluid rounded-top rounded-md-start"
           />
         </div>
         <div class="col-md-8">
