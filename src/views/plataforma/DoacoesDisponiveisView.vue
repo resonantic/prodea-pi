@@ -3,11 +3,13 @@ import AsyncImg from "@/components/AsyncImg.vue";
 import type { Doacao } from "@/models/doacao";
 import { useDoacaoRepo } from "@/repositories/doacao-repo";
 import { useUserInfoRepo } from "@/repositories/user-info-repo";
+import { useLoadingStore } from "@/stores/loading-store";
 import { computed } from "@vue/reactivity";
 import { ref } from "vue";
 
 const $doacaoRepo = useDoacaoRepo();
 const $userInfoRepo = useUserInfoRepo();
+const $loading = useLoadingStore();
 
 const donators = $userInfoRepo.useDonatorsInfo();
 const doacoes = $doacaoRepo.useDoacoesDisponiveis();
@@ -42,7 +44,9 @@ const donatorCityById = (id: string) => {
 };
 
 const defineAsSolicited = async (doacao: Doacao) => {
+  $loading.startLoading();
   await $doacaoRepo.setDoacaoSolicitada(doacao);
+  $loading.stopLoading();
 };
 </script>
 

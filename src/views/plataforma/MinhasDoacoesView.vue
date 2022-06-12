@@ -3,10 +3,12 @@ import AsyncImg from "@/components/AsyncImg.vue";
 import type { Doacao } from "@/models/doacao";
 import { useDoacaoRepo } from "@/repositories/doacao-repo";
 import { useUserInfoRepo } from "@/repositories/user-info-repo";
+import { useLoadingStore } from "@/stores/loading-store";
 import moment from "moment";
 
 const $doacaoRepo = useDoacaoRepo();
 const $userInfoRepo = useUserInfoRepo();
+const $loading = useLoadingStore();
 
 const consumers = $userInfoRepo.useConsumersInfo();
 const doacoes = $doacaoRepo.useMinhasDoacoes();
@@ -45,7 +47,9 @@ const canDefineAsEntregue = (doacao: Doacao) => {
 };
 
 const defineAsEntregue = async (doacao: Doacao) => {
+  $loading.startLoading();
   await $doacaoRepo.setDoacaoEntregue(doacao);
+  $loading.stopLoading();
 };
 
 const canDefineAsCancelada = (doacao: Doacao) => {
@@ -57,7 +61,9 @@ const canDefineAsCancelada = (doacao: Doacao) => {
 };
 
 const defineAsCancelada = async (doacao: Doacao) => {
+  $loading.startLoading();
   await $doacaoRepo.setDoacaoCancelada(doacao, ".");
+  $loading.stopLoading();
 };
 </script>
 

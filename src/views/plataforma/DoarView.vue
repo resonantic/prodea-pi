@@ -3,12 +3,14 @@ import { notifySuccess } from "@/helpers/notify";
 import type { Doacao } from "@/models/doacao";
 import { useDoacaoRepo } from "@/repositories/doacao-repo";
 import { useUserInfoRepo } from "@/repositories/user-info-repo";
+import { useLoadingStore } from "@/stores/loading-store";
 import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 
 const $router = useRouter();
 const $userInfoRepo = useUserInfoRepo();
 const $doacaoRepo = useDoacaoRepo();
+const $loading = useLoadingStore();
 
 const consumidores = $userInfoRepo.useConsumersInfo();
 
@@ -35,6 +37,7 @@ const fotoChanged = async (e: Event) => {
 };
 
 const onSubmit = async () => {
+  $loading.startLoading();
   if (fotoBlob.value) {
     doacao.linkFoto = await $doacaoRepo.uploadFoto(fotoBlob.value);
   }
@@ -42,8 +45,9 @@ const onSubmit = async () => {
   const result = await $doacaoRepo.createDoacao(doacao);
   if (result) {
     notifySuccess("Doação postada com sucesso.");
-    $router.push("/_/minhas-doacoes");
+    await $router.push("/_/minhas-doacoes");
   }
+  $loading.stopLoading();
 };
 </script>
 

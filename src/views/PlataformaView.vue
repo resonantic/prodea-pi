@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useAuthStore } from "@/stores";
+import { useAuthStore } from "@/stores/auth-store";
 import { computed } from "@vue/reactivity";
 import { useRouter } from "vue-router";
 import AnalysingDisplay from "../components/AnalysingDisplay.vue";

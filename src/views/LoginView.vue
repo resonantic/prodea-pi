@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useAuthStore } from "@/stores";
+import { useAuthStore } from "@/stores/auth-store";
 import { computed } from "@vue/reactivity";
 import { ref } from "vue";
 import { useRouter } from "vue-router";

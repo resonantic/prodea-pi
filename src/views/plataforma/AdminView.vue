@@ -1,17 +1,23 @@
 <script setup lang="ts">
 import { StatusAutorizacao, type UserInfo } from "@/models/user-info";
 import { useUserInfoRepo } from "@/repositories/user-info-repo";
+import { useLoadingStore } from "@/stores/loading-store";
 
 const $userInfoRepo = useUserInfoRepo();
+const $loading = useLoadingStore();
 
 const users = $userInfoRepo.useUsersInfo();
 
 const setAutorizado = async (userInfo: UserInfo) => {
+  $loading.startLoading();
   await $userInfoRepo.setUserStatus(userInfo, StatusAutorizacao.autorizado);
+  $loading.stopLoading();
 };
 
 const setNaoAutorizado = async (userInfo: UserInfo) => {
+  $loading.startLoading();
   await $userInfoRepo.setUserStatus(userInfo, StatusAutorizacao.negado);
+  $loading.stopLoading();
 };
 </script>
 

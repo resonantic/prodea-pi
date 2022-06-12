@@ -1,5 +1,5 @@
 import { auth } from "@/firebase";
-import { useAuthStore } from "@/stores";
+import { useAuthStore } from "@/stores/auth-store";
 import { createRouter, createWebHistory } from "vue-router";
 
 const router = createRouter({

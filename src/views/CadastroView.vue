@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import type { UserInfo } from "@/models/user-info";
-import { useAuthStore } from "@/stores";
+import { useAuthStore } from "@/stores/auth-store";
 import { computed, reactive } from "@vue/reactivity";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import cidadesJson from "@/assets/municipios.json";
 import { orderBy } from "lodash";
+import { useLoadingStore } from "@/stores/loading-store";
 
 const $router = useRouter();
 const $auth = useAuthStore();
+const $loading = useLoadingStore();
 
 const cidades = orderBy(cidadesJson, "nome");
 
@@ -45,10 +47,12 @@ const canSubmit = computed(
 );
 
 const onSubmit = async () => {
+  $loading.startLoading();
   const result = await $auth.register(userInfo.email, password.value, userInfo);
   if (result) {
-    $router.push("/_");
+    await $router.push("/_");
   }
+  $loading.stopLoading();
 };
 </script>
 
@@ -62,8 +66,9 @@ const onSubmit = async () => {
     <form @submit.prevent="onSubmit">
       <div class="row">
         <div class="mb-3 col-md-6">
-          <label for="emailInput" class="form-label">Email</label>
+          <label for="emailInput" class="form-label"> Email </label>
           <input
+            autocomplete="off"
             type="email"
             v-model="userInfo.email"
             class="form-control"
@@ -71,8 +76,9 @@ const onSubmit = async () => {
           />
         </div>
         <div class="mb-3 col-md-6">
-          <label for="passwordInput" class="form-label">Senha</label>
+          <label for="passwordInput" class="form-label"> Senha </label>
           <input
+            autocomplete="off"
             type="password"
             v-model="password"
             class="form-control"
