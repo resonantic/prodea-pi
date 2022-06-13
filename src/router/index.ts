@@ -46,33 +46,33 @@ const router = createRouter({
           path: "doar",
           name: "doar",
           component: () => import("../views/plataforma/DoarView.vue"),
-          meta: { requiresDoador: true },
+          meta: { requiresDonorStatus: true },
         },
         {
           path: "minhas-doacoes",
           name: "minhas-doacoes",
           component: () => import("../views/plataforma/MinhasDoacoesView.vue"),
-          meta: { requiresDoador: true },
+          meta: { requiresDonorStatus: true },
         },
         {
           path: "doacoes-disponiveis",
           name: "doacoes-disponiveis",
           component: () =>
             import("../views/plataforma/DoacoesDisponiveisView.vue"),
-          meta: { requiresConsumidor: true },
+          meta: { requiresBeneficiaryStatus: true },
         },
         {
           path: "doacoes-solicitadas",
           name: "doacoes-solicitadas",
           component: () =>
             import("../views/plataforma/DoacoesSolicitadasView.vue"),
-          meta: { requiresConsumidor: true },
+          meta: { requiresBeneficiaryStatus: true },
         },
         {
           path: "admin",
           name: "admin",
           component: () => import("../views/plataforma/AdminView.vue"),
-          meta: { requiresAdmin: true },
+          meta: { requiresAdminStatus: true },
         },
       ],
     },
@@ -103,19 +103,19 @@ router.beforeEach(async (to, from, next) => {
 
   const $auth = useAuthStore();
 
-  if (to.matched.some((record) => record.meta.requiresDoador)) {
-    if (!$auth.isDoador) {
+  if (to.matched.some((record) => record.meta.requiresDonorStatus)) {
+    if (!$auth.isDonor) {
       next("/_");
       return;
     }
   }
-  if (to.matched.some((record) => record.meta.requiresConsumidor)) {
-    if (!$auth.isConsumidor) {
+  if (to.matched.some((record) => record.meta.requiresBeneficiaryStatus)) {
+    if (!$auth.isBeneficiary) {
       next("/_");
       return;
     }
   }
-  if (to.matched.some((record) => record.meta.requiresAdmin)) {
+  if (to.matched.some((record) => record.meta.requiresAdminStatus)) {
     if (!$auth.isAdmin) {
       next("/_");
       return;

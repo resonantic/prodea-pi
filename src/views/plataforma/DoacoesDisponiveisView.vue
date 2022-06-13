@@ -1,26 +1,26 @@
 <script setup lang="ts">
 import AsyncImg from "@/components/AsyncImg.vue";
-import type { Doacao } from "@/models/doacao";
-import { useDoacaoRepo } from "@/repositories/doacao-repo";
+import type { Donation } from "@/models/donation";
+import { useDonationRepo } from "@/repositories/donation-repo";
 import { useUserInfoRepo } from "@/repositories/user-info-repo";
 import { useLoadingStore } from "@/stores/loading-store";
 import { computed } from "@vue/reactivity";
 import { ref } from "vue";
 
-const $doacaoRepo = useDoacaoRepo();
+const $donationRepo = useDonationRepo();
 const $userInfoRepo = useUserInfoRepo();
 const $loading = useLoadingStore();
 
-const donators = $userInfoRepo.useDonatorsInfo();
-const doacoes = $doacaoRepo.useDoacoesDisponiveis();
+const donators = $userInfoRepo.donorsInfo$;
+const donations = $donationRepo.availableDonations$;
 
 const filter = ref<string>("");
-const filteredDoacoes = computed<Doacao[]>(() =>
+const filteredDonations = computed<Donation[]>(() =>
   filter.value == ""
-    ? doacoes.value
-    : doacoes.value.filter((doacao) => {
-        if (!doacao.idDoador) return false;
-        return donatorCityById(doacao.idDoador)
+    ? donations.value
+    : donations.value.filter((donation) => {
+        if (!donation.donorId) return false;
+        return donatorCityById(donation.donorId)
           ?.toLowerCase()
           .normalize("NFD")
           .replace(/[\u0300-\u036f]/g, "")
@@ -35,17 +35,17 @@ const filteredDoacoes = computed<Doacao[]>(() =>
 
 const donatorNameById = (id: string) => {
   const donator = donators.value.find((c) => c.id == id);
-  return donator?.nome;
+  return donator?.name;
 };
 
 const donatorCityById = (id: string) => {
   const donator = donators.value.find((c) => c.id == id);
-  return donator?.cidade;
+  return donator?.city;
 };
 
-const defineAsSolicited = async (doacao: Doacao) => {
+const defineAsRequested = async (donation: Donation) => {
   $loading.startLoading();
-  await $doacaoRepo.setDoacaoSolicitada(doacao);
+  await $donationRepo.setAsRequested(donation);
   $loading.stopLoading();
 };
 </script>
@@ -67,36 +67,40 @@ const defineAsSolicited = async (doacao: Doacao) => {
         </div>
       </div>
     </div>
-    <p v-if="doacoes.length == 0">
+    <p v-if="donations.length == 0">
       Infelizmente não há doaçoes disponíveis no momento...
     </p>
-    <div class="card mb-3" v-for="doacao in filteredDoacoes" :key="doacao.id">
+    <div
+      class="card mb-3"
+      v-for="donation in filteredDonations"
+      :key="donation.id"
+    >
       <div class="row g-0">
         <div class="col-md-4">
           <AsyncImg
-            v-if="doacao.linkFoto"
-            :src="() => $doacaoRepo.getFotoLink(doacao.linkFoto!)"
+            v-if="donation.photoUrl"
+            :src="() => $donationRepo.getPhotoUrl(donation.photoUrl!)"
             class="img-fluid rounded-top rounded-md-start"
           />
         </div>
         <div class="col-md-8">
           <div class="card-body">
-            <h5 class="card-title">{{ doacao.descricao }}</h5>
+            <h5 class="card-title">{{ donation.description }}</h5>
             <h6 class="card-text">
-              Data da Doação: {{ doacao.dataDoacao?.toLocaleDateString() }}
+              Data da Doação: {{ donation.createdAt?.toLocaleDateString() }}
             </h6>
-            <h6 v-if="!doacao.entregue" class="card-text">
-              Validade: {{ doacao.validade }}
+            <h6 v-if="!donation.isDelivered" class="card-text">
+              Validade: {{ donation.expiration }}
             </h6>
-            <h6 v-if="doacao.idDoador" class="card-text">
-              Doador: {{ donatorNameById(doacao.idDoador) }}
+            <h6 v-if="donation.donorId" class="card-text">
+              Doador: {{ donatorNameById(donation.donorId) }}
             </h6>
-            <h6 v-if="doacao.idDoador" class="card-text">
-              Cidade: {{ donatorCityById(doacao.idDoador) }}
+            <h6 v-if="donation.donorId" class="card-text">
+              Cidade: {{ donatorCityById(donation.donorId) }}
             </h6>
             <div class="d-grid gap-2 d-md-block">
               <a
-                @click="() => defineAsSolicited(doacao)"
+                @click="() => defineAsRequested(donation)"
                 class="btn btn-success"
               >
                 Solicitar Doação

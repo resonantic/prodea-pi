@@ -9,11 +9,11 @@ const $router = useRouter();
 const $auth = useAuthStore();
 
 const isLoggedIn = computed(() => $auth.isLoggedIn);
-const isAwaiting = computed(
-  () => !$auth.isAdmin && !$auth.isAutorizado && !$auth.isNegado
+const isWaiting = computed(
+  () => !$auth.isAdmin && !$auth.isAuthorized && !$auth.isDenied
 );
-const isDenied = computed(() => !$auth.isAdmin && $auth.isNegado);
-const displayName = computed(() => $auth.currentUserInfo?.nome || "");
+const isDenied = computed(() => !$auth.isAdmin && $auth.isDenied);
+const displayName = computed(() => $auth.currentUserInfo?.name || "");
 
 const logout = async () => {
   await $auth.logout();
@@ -25,7 +25,7 @@ const logout = async () => {
   <div v-if="isLoggedIn">
     <nav
       class="navbar navbar-expand-md navbar-dark fixed-top bg-dark"
-      v-if="!isAwaiting && !isDenied"
+      v-if="!isWaiting && !isDenied"
     >
       <div class="container-fluid">
         <router-link to="/" class="navbar-brand">
@@ -51,7 +51,7 @@ const logout = async () => {
                 to="/_/doar"
                 class="nav-link"
                 aria-current="page"
-                v-if="$auth.isDoador"
+                v-if="$auth.isDonor"
               >
                 Doar
               </router-link>
@@ -62,7 +62,7 @@ const logout = async () => {
                 to="/_/minhas-doacoes"
                 class="nav-link"
                 aria-current="page"
-                v-if="$auth.isDoador"
+                v-if="$auth.isDonor"
               >
                 Minhas Doações
               </router-link>
@@ -73,7 +73,7 @@ const logout = async () => {
                 to="/_/doacoes-disponiveis"
                 class="nav-link"
                 aria-current="page"
-                v-if="$auth.isConsumidor"
+                v-if="$auth.isBeneficiary"
               >
                 Doações Disponíveis
               </router-link>
@@ -84,7 +84,7 @@ const logout = async () => {
                 to="/_/doacoes-solicitadas"
                 class="nav-link"
                 aria-current="page"
-                v-if="$auth.isConsumidor"
+                v-if="$auth.isBeneficiary"
               >
                 Doações Solicitadas
               </router-link>
@@ -115,11 +115,11 @@ const logout = async () => {
       </div>
     </nav>
 
-    <main class="container pt-5 mt-5" v-if="!isAwaiting && !isDenied">
+    <main class="container pt-5 mt-5" v-if="!isWaiting && !isDenied">
       <router-view />
     </main>
 
-    <div v-if="isAwaiting">
+    <div v-if="isWaiting">
       <AnalysingDisplay />
     </div>
 

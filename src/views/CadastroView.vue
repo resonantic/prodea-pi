@@ -4,7 +4,7 @@ import { useAuthStore } from "@/stores/auth-store";
 import { computed, reactive } from "@vue/reactivity";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import cidadesJson from "@/assets/municipios.json";
+import citiesJson from "@/assets/cities.json";
 import { orderBy } from "lodash";
 import { useLoadingStore } from "@/stores/loading-store";
 
@@ -12,22 +12,22 @@ const $router = useRouter();
 const $auth = useAuthStore();
 const $loading = useLoadingStore();
 
-const cidades = orderBy(cidadesJson, "nome");
+const cities = orderBy(citiesJson, "nome");
 
 const password = ref<string>("");
 const userInfo = reactive<UserInfo>({
   email: "",
   cnpj: "",
-  nome: "",
-  endereco: "",
-  cidade: "",
-  telefone: "",
-  sobre: "",
-  nomeResponsavel: "",
-  cpfResponsavel: "",
-  doador: false,
-  consumidor: false,
-  admin: false,
+  name: "",
+  address: "",
+  city: "",
+  phoneNumber: "",
+  about: "",
+  responsibleName: "",
+  responsibleCpf: "",
+  isDonor: false,
+  isBeneficiary: false,
+  isAdmin: false,
   status: 0,
 });
 
@@ -36,14 +36,14 @@ const canSubmit = computed(
     password.value != "" &&
     userInfo.email != "" &&
     userInfo.cnpj != "" &&
-    userInfo.nome != "" &&
-    userInfo.endereco != "" &&
-    userInfo.cidade != "" &&
-    userInfo.telefone != "" &&
-    userInfo.sobre != "" &&
-    userInfo.nomeResponsavel != "" &&
-    userInfo.cpfResponsavel != "" &&
-    (userInfo.consumidor || userInfo.doador)
+    userInfo.name != "" &&
+    userInfo.address != "" &&
+    userInfo.city != "" &&
+    userInfo.phoneNumber != "" &&
+    userInfo.about != "" &&
+    userInfo.responsibleName != "" &&
+    userInfo.responsibleCpf != "" &&
+    (userInfo.isBeneficiary || userInfo.isDonor)
 );
 
 const onSubmit = async () => {
@@ -99,53 +99,49 @@ const onSubmit = async () => {
           />
         </div>
         <div class="mb-3 col-md-7">
-          <label for="nomeInput" class="form-label">
+          <label for="nameInput" class="form-label">
             Nome da Empresa/Entidade
           </label>
           <input
             type="text"
-            v-model="userInfo.nome"
+            v-model="userInfo.name"
             class="form-control"
-            id="nomeInput"
+            id="nameInput"
           />
         </div>
       </div>
 
       <div class="row">
         <div class="mb-3 col-md-6">
-          <label for="enderecoInput" class="form-label">
+          <label for="addressInput" class="form-label">
             Endereço (Rua, Número e Bairro)
           </label>
           <input
             type="text"
-            v-model="userInfo.endereco"
+            v-model="userInfo.address"
             class="form-control"
-            id="enderecoInput"
+            id="addressInput"
           />
         </div>
         <div class="mb-3 col-md-3">
-          <label for="cidadeSelect" class="form-label"> Cidade </label>
-          <select
-            v-model="userInfo.cidade"
-            class="form-select"
-            id="cidadeSelect"
-          >
+          <label for="citySelect" class="form-label"> Cidade </label>
+          <select v-model="userInfo.city" class="form-select" id="citySelect">
             <option
-              v-for="cidade in cidades"
-              :key="cidade.nome"
-              :value="cidade.nome + '/' + cidade.uf"
+              v-for="city in cities"
+              :key="city.nome"
+              :value="city.nome + '/' + city.uf"
             >
-              {{ cidade.nome }}/{{ cidade.uf }}
+              {{ city.nome }}/{{ city.uf }}
             </option>
           </select>
         </div>
         <div class="mb-3 col-md-3">
-          <label for="telefoneInput" class="form-label"> Telefone </label>
+          <label for="phoneNumberInput" class="form-label"> Telefone </label>
           <input
             type="text"
-            v-model="userInfo.telefone"
+            v-model="userInfo.phoneNumber"
             class="form-control"
-            id="telefoneInput"
+            id="phoneNumberInput"
             v-maska="['(##) ####-####', '(##) #####-####']"
           />
         </div>
@@ -153,13 +149,13 @@ const onSubmit = async () => {
 
       <div class="row">
         <div class="mb-3">
-          <label for="sobreInput" class="form-label">
+          <label for="aboutInput" class="form-label">
             Sobre a Empresa/Entidade
           </label>
           <textarea
-            v-model="userInfo.sobre"
+            v-model="userInfo.about"
             class="form-control"
-            id="sobreInput"
+            id="aboutInput"
             placeholder="Conte-nos um pouco sobre sua empresa/entidade..."
           />
         </div>
@@ -167,25 +163,25 @@ const onSubmit = async () => {
 
       <div class="row">
         <div class="mb-3 col-md-7">
-          <label for="nomeResponsavelInput" class="form-label">
+          <label for="responsibleNameInput" class="form-label">
             Nome Completo do Responsável
           </label>
           <input
             type="text"
-            v-model="userInfo.nomeResponsavel"
+            v-model="userInfo.responsibleName"
             class="form-control"
-            id="nomeResponsavelInput"
+            id="responsibleNameInput"
           />
         </div>
         <div class="mb-3 col-md-5">
-          <label for="cpfResponsavelInput" class="form-label">
+          <label for="responsibleCpfInput" class="form-label">
             CPF do Responsável
           </label>
           <input
             type="text"
-            v-model="userInfo.cpfResponsavel"
+            v-model="userInfo.responsibleCpf"
             class="form-control"
-            id="cpfResponsavelInput"
+            id="responsibleCpfInput"
             v-maska="'###.###.###-##'"
           />
         </div>
@@ -197,10 +193,10 @@ const onSubmit = async () => {
             <input
               class="form-check-input"
               type="checkbox"
-              v-model="userInfo.doador"
-              id="doadorCheckbox"
+              v-model="userInfo.isDonor"
+              id="isDonorCheckbox"
             />
-            <label class="form-check-label" for="doadorCheckbox">
+            <label class="form-check-label" for="isDonorCheckbox">
               Desejo cadastrar minha empresa/entidade como doadora.
             </label>
           </div>
@@ -213,11 +209,11 @@ const onSubmit = async () => {
             <input
               class="form-check-input"
               type="checkbox"
-              v-model="userInfo.consumidor"
-              id="consumidorCheckbox"
+              v-model="userInfo.isBeneficiary"
+              id="isBeneficiaryCheckbox"
             />
-            <label class="form-check-label" for="consumidorCheckbox">
-              Desejo cadastrar minha empresa/entidade como consumidora.
+            <label class="form-check-label" for="isBeneficiaryCheckbox">
+              Desejo cadastrar minha empresa/entidade como beneficiária.
             </label>
           </div>
         </div>

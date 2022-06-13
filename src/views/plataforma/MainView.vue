@@ -5,7 +5,7 @@ import { computed } from "vue";
 const $auth = useAuthStore();
 
 const responsavelNome = computed(
-  () => $auth.currentUserInfo?.nomeResponsavel || ""
+  () => $auth.currentUserInfo?.responsibleName || ""
 );
 </script>
 

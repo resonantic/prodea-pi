@@ -9,7 +9,7 @@ import { defineStore } from "pinia";
 import { auth } from "@/firebase";
 import router from "@/router";
 import type { FirebaseError } from "@firebase/util";
-import { StatusAutorizacao, type UserInfo } from "@/models/user-info";
+import { AuthorizationStatus, type UserInfo } from "@/models/user-info";
 import { useUserInfoRepo } from "@/repositories/user-info-repo";
 import { notifyError } from "@/helpers/notify";
 
@@ -28,13 +28,13 @@ export const useAuthStore = defineStore("auth", {
 
   getters: {
     isLoggedIn: (state) => !!state.currentUser,
-    isAdmin: (state) => !!state.currentUserInfo?.admin,
-    isDoador: (state) => !!state.currentUserInfo?.doador,
-    isConsumidor: (state) => !!state.currentUserInfo?.consumidor,
-    isAutorizado: (state) =>
-      state.currentUserInfo?.status == StatusAutorizacao.autorizado,
-    isNegado: (state) =>
-      state.currentUserInfo?.status == StatusAutorizacao.negado,
+    isAdmin: (state) => !!state.currentUserInfo?.isAdmin,
+    isDonor: (state) => !!state.currentUserInfo?.isDonor,
+    isBeneficiary: (state) => !!state.currentUserInfo?.isBeneficiary,
+    isAuthorized: (state) =>
+      state.currentUserInfo?.status == AuthorizationStatus.authorized,
+    isDenied: (state) =>
+      state.currentUserInfo?.status == AuthorizationStatus.denied,
   },
 
   actions: {
@@ -68,7 +68,7 @@ export const useAuthStore = defineStore("auth", {
     async register(email: string, password: string, userInfo: UserInfo) {
       try {
         await createUserWithEmailAndPassword(auth, email, password);
-        await $userInfoRepo.createUserInfo(userInfo);
+        await $userInfoRepo.create(userInfo);
         return true;
       } catch (error: unknown) {
         switch ((error as FirebaseError).code) {
@@ -106,7 +106,7 @@ export const useAuthStore = defineStore("auth", {
         await router.isReady();
 
         if (user) {
-          const userInfo = await $userInfoRepo.getUserInfo();
+          const userInfo = await $userInfoRepo.getCurrentUserInfo();
           this.setCurrentUser(user);
           this.setCurrentUserInfo(userInfo);
         } else {

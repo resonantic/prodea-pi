@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { notifySuccess } from "@/helpers/notify";
-import type { Doacao } from "@/models/doacao";
-import { useDoacaoRepo } from "@/repositories/doacao-repo";
+import type { Donation } from "@/models/donation";
+import { useDonationRepo } from "@/repositories/donation-repo";
 import { useUserInfoRepo } from "@/repositories/user-info-repo";
 import { useLoadingStore } from "@/stores/loading-store";
 import { reactive, ref } from "vue";
@@ -9,40 +9,40 @@ import { useRouter } from "vue-router";
 
 const $router = useRouter();
 const $userInfoRepo = useUserInfoRepo();
-const $doacaoRepo = useDoacaoRepo();
+const $donationRepo = useDonationRepo();
 const $loading = useLoadingStore();
 
-const consumidores = $userInfoRepo.useConsumersInfo();
+const beneficiaries = $userInfoRepo.beneficiariesInfo$;
 
-const fotoBlob = ref<Blob | null>(null);
-const doacao = reactive<Doacao>({
-  descricao: "",
-  linkFoto: null,
-  idConsumidor: null,
-  validade: "",
-  cancelamento: null,
-  entregue: false,
+const photoBlob = ref<Blob | null>(null);
+const donation = reactive<Donation>({
+  description: "",
+  photoUrl: null,
+  beneficiaryId: null,
+  expiration: "",
+  cancellation: null,
+  isDelivered: false,
 });
 
-const fotoChanged = async (e: Event) => {
+const photoChanged = async (e: Event) => {
   const file = (e.target as HTMLInputElement).files?.item(0);
   if (file) {
     const bytes = await file.arrayBuffer();
     const arrayBufferView = new Uint8Array(bytes);
     const blob = new Blob([arrayBufferView], { type: "image/jpeg" });
-    fotoBlob.value = blob;
+    photoBlob.value = blob;
   } else {
-    fotoBlob.value = null;
+    photoBlob.value = null;
   }
 };
 
 const onSubmit = async () => {
   $loading.startLoading();
-  if (fotoBlob.value) {
-    doacao.linkFoto = await $doacaoRepo.uploadFoto(fotoBlob.value);
+  if (photoBlob.value) {
+    donation.photoUrl = await $donationRepo.uploadPhoto(photoBlob.value);
   }
-  doacao.dataDoacao = new Date();
-  const result = await $doacaoRepo.createDoacao(doacao);
+  donation.createdAt = new Date();
+  const result = await $donationRepo.create(donation);
   if (result) {
     await $router.push("/_/minhas-doacoes");
     notifySuccess("Doação postada com sucesso.");
@@ -57,11 +57,11 @@ const onSubmit = async () => {
     <form @submit.prevent="onSubmit">
       <div class="row">
         <div class="mb-3">
-          <label for="descricaoInput" class="form-label"> Descrição </label>
+          <label for="descriptionInput" class="form-label"> Descrição </label>
           <textarea
-            v-model="doacao.descricao"
+            v-model="donation.description"
             class="form-control"
-            id="descricaoInput"
+            id="descriptionInput"
             placeholder="Descreva as condições do produto que será doado..."
           />
         </div>
@@ -69,12 +69,12 @@ const onSubmit = async () => {
 
       <div class="row">
         <div class="mb-3">
-          <label for="fotoInput" class="form-label">Foto</label>
+          <label for="photoInput" class="form-label">Foto</label>
           <input
             class="form-control"
             type="file"
-            id="fotoInput"
-            @change="fotoChanged"
+            id="photoInput"
+            @change="photoChanged"
             accept="image/jpeg"
           />
         </div>
@@ -82,23 +82,23 @@ const onSubmit = async () => {
 
       <div class="row">
         <div class="mb-3">
-          <label for="consumidorSelect" class="form-label">
+          <label for="beneficiarySelect" class="form-label">
             Doar para uma entidade específica? Caso não seja selecionada nenhuma
             entidade específica, a doação ficará disponível para qualquer
             entidade cadastrada na plataforma.
           </label>
           <select
-            v-model="doacao.idConsumidor"
+            v-model="donation.beneficiaryId"
             class="form-select"
-            id="consumidorSelect"
+            id="beneficiarySelect"
           >
             <option :value="null">Não</option>
             <option
-              v-for="consumidor in consumidores"
-              :key="consumidor.id"
-              :value="consumidor.id"
+              v-for="beneficiary in beneficiaries"
+              :key="beneficiary.id"
+              :value="beneficiary.id"
             >
-              {{ consumidor.nome }}
+              {{ beneficiary.name }}
             </option>
           </select>
         </div>
@@ -106,14 +106,14 @@ const onSubmit = async () => {
 
       <div class="row">
         <div class="mb-3">
-          <label for="validadeInput" class="form-label">
+          <label for="expirationInput" class="form-label">
             Prazo de Validade da Doação
           </label>
           <input
             type="text"
-            v-model="doacao.validade"
+            v-model="donation.expiration"
             class="form-control"
-            id="validadeInput"
+            id="expirationInput"
             v-maska="'##/##/####'"
           />
         </div>

@@ -2,7 +2,7 @@
 import { useUserInfoRepo } from "@/repositories/user-info-repo";
 
 const $userInfoRepo = useUserInfoRepo();
-const donators = $userInfoRepo.useDonatorsInfo();
+const donators = $userInfoRepo.donorsInfo$;
 </script>
 
 <template>
@@ -15,11 +15,11 @@ const donators = $userInfoRepo.useDonatorsInfo();
       <p class="lead">Atualmente, o projeto conta com os seguintes doadores:</p>
       <div class="card mb-3" v-for="donator in donators" :key="donator.cnpj">
         <div class="card-body">
-          <h5 class="card-title">{{ donator.nome }}</h5>
+          <h5 class="card-title">{{ donator.name }}</h5>
           <h6 class="card-subtitle mb-2 text-muted">
-            {{ donator.endereco }}, {{ donator.cidade }}
+            {{ donator.address }}, {{ donator.city }}
           </h6>
-          <p class="card-text">{{ donator.sobre }}</p>
+          <p class="card-text">{{ donator.about }}</p>
         </div>
       </div>
     </div>

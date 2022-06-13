@@ -3,23 +3,23 @@ export interface UserInfo {
   email: string;
 
   cnpj: string;
-  nome: string;
-  endereco: string;
-  cidade: string;
-  telefone: string;
-  sobre: string;
-  nomeResponsavel: string;
-  cpfResponsavel: string;
+  name: string;
+  address: string;
+  city: string;
+  phoneNumber: string;
+  about: string;
+  responsibleName: string;
+  responsibleCpf: string;
 
-  doador: boolean;
-  consumidor: boolean;
-  admin: boolean;
+  isDonor: boolean;
+  isBeneficiary: boolean;
+  isAdmin: boolean;
 
-  status: StatusAutorizacao;
+  status: AuthorizationStatus;
 }
 
-export enum StatusAutorizacao {
-  aguardando = 0,
-  autorizado = 1,
-  negado = 2,
+export enum AuthorizationStatus {
+  waiting = 0,
+  authorized = 1,
+  denied = 2,
 }

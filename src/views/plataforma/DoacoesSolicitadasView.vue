@@ -1,26 +1,26 @@
 <script setup lang="ts">
 import AsyncImg from "@/components/AsyncImg.vue";
-import type { Doacao } from "@/models/doacao";
-import { useDoacaoRepo } from "@/repositories/doacao-repo";
+import type { Donation } from "@/models/donation";
+import { useDonationRepo } from "@/repositories/donation-repo";
 import { useUserInfoRepo } from "@/repositories/user-info-repo";
 import { useLoadingStore } from "@/stores/loading-store";
 import moment from "moment";
 import { computed, ref } from "vue";
 
-const $doacaoRepo = useDoacaoRepo();
+const $donationRepo = useDonationRepo();
 const $userInfoRepo = useUserInfoRepo();
 const $loading = useLoadingStore();
 
-const donators = $userInfoRepo.useDonatorsInfo();
-const doacoes = $doacaoRepo.useDoacoesRecebidas();
+const donors = $userInfoRepo.donorsInfo$;
+const donations = $donationRepo.receivedDonations$;
 
 const filter = ref<string>("");
-const filteredDoacoes = computed<Doacao[]>(() =>
+const filteredDonations = computed<Donation[]>(() =>
   filter.value == ""
-    ? doacoes.value
-    : doacoes.value.filter((doacao) => {
-        if (!doacao.idDoador) return false;
-        return donatorCityById(doacao.idDoador)
+    ? donations.value
+    : donations.value.filter((donation) => {
+        if (!donation.donorId) return false;
+        return donorCityById(donation.donorId)
           ?.toLowerCase()
           .normalize("NFD")
           .replace(/[\u0300-\u036f]/g, "")
@@ -33,55 +33,55 @@ const filteredDoacoes = computed<Doacao[]>(() =>
       })
 );
 
-const donatorNameById = (id: string) => {
-  const donator = donators.value.find((c) => c.id == id);
-  return donator?.nome;
+const donorNameById = (id: string) => {
+  const donor = donors.value.find((c) => c.id == id);
+  return donor?.name;
 };
 
-const donatorCityById = (id: string) => {
-  const donator = donators.value.find((c) => c.id == id);
-  return donator?.cidade;
+const donorCityById = (id: string) => {
+  const donor = donors.value.find((c) => c.id == id);
+  return donor?.city;
 };
 
-const doacaoSituacao = (doacao: Doacao) => {
-  if (doacao.cancelamento) {
-    return `Cancelada. Motivo: ${doacao.cancelamento}`;
+const donationStatus = (donation: Donation) => {
+  if (donation.cancellation) {
+    return `Cancelada. Motivo: ${donation.cancellation}`;
   }
-  if (doacao.entregue) {
+  if (donation.isDelivered) {
     return "Doação retirada ou entregue";
   }
-  const validade = moment(`${doacao.validade} 23:59`, "DD/MM/YYYY HH:mm");
-  if (validade.diff(moment()) < 0) {
+  const expiration = moment(`${donation.expiration} 23:59`, "DD/MM/YYYY HH:mm");
+  if (expiration.diff(moment()) < 0) {
     return "Validade expirada";
   }
   return "Aguardando retirada ou entrega";
 };
 
-const canDefineAsEntregue = (doacao: Doacao) => {
-  if (doacao.cancelamento) return false;
-  if (doacao.entregue) return false;
-  const validade = moment(`${doacao.validade} 23:59`, "DD/MM/YYYY HH:mm");
-  if (validade.diff(moment()) < 0) return false;
+const canDefineAsDelivered = (donation: Donation) => {
+  if (donation.cancellation) return false;
+  if (donation.isDelivered) return false;
+  const expiration = moment(`${donation.expiration} 23:59`, "DD/MM/YYYY HH:mm");
+  if (expiration.diff(moment()) < 0) return false;
   return true;
 };
 
-const defineAsEntregue = async (doacao: Doacao) => {
+const defineAsDelivered = async (donation: Donation) => {
   $loading.startLoading();
-  await $doacaoRepo.setDoacaoEntregue(doacao);
+  await $donationRepo.setAsDelivered(donation);
   $loading.stopLoading();
 };
 
-const canDefineAsCancelada = (doacao: Doacao) => {
-  if (doacao.cancelamento) return false;
-  if (doacao.entregue) return false;
-  const validade = moment(`${doacao.validade} 23:59`, "DD/MM/YYYY HH:mm");
-  if (validade.diff(moment()) < 0) return false;
+const canDefineAsUnrequested = (donation: Donation) => {
+  if (donation.cancellation) return false;
+  if (donation.isDelivered) return false;
+  const expiration = moment(`${donation.expiration} 23:59`, "DD/MM/YYYY HH:mm");
+  if (expiration.diff(moment()) < 0) return false;
   return true;
 };
 
-const defineAsCancelada = async (doacao: Doacao) => {
+const defineAsUnrequested = async (donation: Donation) => {
   $loading.startLoading();
-  await $doacaoRepo.setDoacaoNaoSolicitada(doacao);
+  await $donationRepo.setAsUnrequested(donation);
   $loading.stopLoading();
 };
 </script>
@@ -103,41 +103,45 @@ const defineAsCancelada = async (doacao: Doacao) => {
         </div>
       </div>
     </div>
-    <p v-if="doacoes.length == 0">No momento não há doaçoes solicitadas...</p>
-    <div class="card mb-3" v-for="doacao in filteredDoacoes" :key="doacao.id">
+    <p v-if="donations.length == 0">No momento não há doaçoes solicitadas...</p>
+    <div
+      class="card mb-3"
+      v-for="donation in filteredDonations"
+      :key="donation.id"
+    >
       <div class="row g-0">
         <AsyncImg
-          v-if="doacao.linkFoto"
-          :src="() => $doacaoRepo.getFotoLink(doacao.linkFoto!)"
+          v-if="donation.photoUrl"
+          :src="() => $donationRepo.getPhotoUrl(donation.photoUrl!)"
           class="col-md-4 img-fluid rounded-top rounded-md-start"
         />
         <div class="col-md-8">
           <div class="card-body">
-            <h5 class="card-title">{{ doacao.descricao }}</h5>
+            <h5 class="card-title">{{ donation.description }}</h5>
             <h6 class="card-text">
-              Data da Doação: {{ doacao.dataDoacao?.toLocaleDateString() }}
+              Data da Doação: {{ donation.createdAt?.toLocaleDateString() }}
             </h6>
-            <h6 v-if="!doacao.entregue" class="card-text">
-              Validade: {{ doacao.validade }}
+            <h6 v-if="!donation.isDelivered" class="card-text">
+              Validade: {{ donation.expiration }}
             </h6>
-            <h6 v-if="doacao.idDoador" class="card-text">
-              Doador: {{ donatorNameById(doacao.idDoador) }}
+            <h6 v-if="donation.donorId" class="card-text">
+              Doador: {{ donorNameById(donation.donorId) }}
             </h6>
-            <h6 v-if="doacao.idDoador" class="card-text">
-              Cidade: {{ donatorCityById(doacao.idDoador) }}
+            <h6 v-if="donation.donorId" class="card-text">
+              Cidade: {{ donorCityById(donation.donorId) }}
             </h6>
-            <h6 class="card-text">Situação: {{ doacaoSituacao(doacao) }}</h6>
+            <h6 class="card-text">Situação: {{ donationStatus(donation) }}</h6>
             <div class="d-grid gap-2 d-md-block">
               <a
-                @click="() => defineAsEntregue(doacao)"
+                @click="() => defineAsDelivered(donation)"
                 class="btn btn-success me-md-2"
-                v-if="canDefineAsEntregue(doacao)"
+                v-if="canDefineAsDelivered(donation)"
               >
                 Marcar como Recebida
               </a>
               <a
-                @click="() => defineAsCancelada(doacao)"
-                v-if="canDefineAsCancelada(doacao)"
+                @click="() => defineAsUnrequested(donation)"
+                v-if="canDefineAsUnrequested(donation)"
                 class="btn btn-danger"
               >
                 Cancelar Solicitação

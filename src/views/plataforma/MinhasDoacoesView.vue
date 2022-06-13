@@ -1,96 +1,93 @@
 <script setup lang="ts">
 import AsyncImg from "@/components/AsyncImg.vue";
-import type { Doacao } from "@/models/doacao";
-import { useDoacaoRepo } from "@/repositories/doacao-repo";
+import type { Donation } from "@/models/donation";
+import { useDonationRepo } from "@/repositories/donation-repo";
 import { useUserInfoRepo } from "@/repositories/user-info-repo";
 import { useLoadingStore } from "@/stores/loading-store";
 import { Modal } from "bootstrap";
 import moment from "moment";
 import { onMounted, ref, type VNodeRef } from "vue";
 
-const $doacaoRepo = useDoacaoRepo();
+const $donationRepo = useDonationRepo();
 const $userInfoRepo = useUserInfoRepo();
 const $loading = useLoadingStore();
 
-const consumers = $userInfoRepo.useConsumersInfo();
-const doacoes = $doacaoRepo.useMinhasDoacoes();
+const beneficiaries = $userInfoRepo.beneficiariesInfo$;
+const donations = $donationRepo.myDonations$;
 
 const modalEl = ref<VNodeRef | null>(null);
-const motivoCancelamento = ref<string>("");
-const modalDoacao = ref<Doacao | null>(null);
+const cancelReason = ref<string>("");
+const modalDonation = ref<Donation | null>(null);
 
-const consumerNameById = (id: string) => {
-  const consumer = consumers.value.find((c) => c.id == id);
-  return consumer?.nome;
+const beneficiaryNameById = (id: string) => {
+  const beneficiary = beneficiaries.value.find((c) => c.id == id);
+  return beneficiary?.name;
 };
 
-const doacaoSituacao = (doacao: Doacao) => {
-  if (doacao.cancelamento) {
-    return `Cancelada. Motivo: ${doacao.cancelamento}`;
+const donationStatus = (donation: Donation) => {
+  if (donation.cancellation) {
+    return `Cancelada. Motivo: ${donation.cancellation}`;
   }
-  if (doacao.entregue) {
+  if (donation.isDelivered) {
     return "Doação retirada ou entregue";
   }
-  const validade = moment(`${doacao.validade} 23:59`, "DD/MM/YYYY HH:mm");
-  if (validade.diff(moment()) < 0) {
+  const expiration = moment(`${donation.expiration} 23:59`, "DD/MM/YYYY HH:mm");
+  if (expiration.diff(moment()) < 0) {
     return "Validade expirada";
   }
-  if (!doacao.idConsumidor) {
+  if (!donation.beneficiaryId) {
     return "Aguardando interessados";
   }
-  if (doacao.idConsumidor) {
+  if (donation.beneficiaryId) {
     return "Aguardando retirada ou entrega";
   }
 };
 
-const canDefineAsEntregue = (doacao: Doacao) => {
-  if (doacao.cancelamento) return false;
-  if (doacao.entregue) return false;
-  const validade = moment(`${doacao.validade} 23:59`, "DD/MM/YYYY HH:mm");
-  if (validade.diff(moment()) < 0) return false;
-  if (!doacao.idConsumidor) return false;
+const canDefineAsDelivered = (donation: Donation) => {
+  if (donation.cancellation) return false;
+  if (donation.isDelivered) return false;
+  const expiration = moment(`${donation.expiration} 23:59`, "DD/MM/YYYY HH:mm");
+  if (expiration.diff(moment()) < 0) return false;
+  if (!donation.beneficiaryId) return false;
   return true;
 };
 
-const defineAsEntregue = async (doacao: Doacao) => {
+const defineAsDelivered = async (donation: Donation) => {
   $loading.startLoading();
-  await $doacaoRepo.setDoacaoEntregue(doacao);
+  await $donationRepo.setAsDelivered(donation);
   $loading.stopLoading();
 };
 
-const canDefineAsCancelada = (doacao: Doacao) => {
-  if (doacao.cancelamento) return false;
-  if (doacao.entregue) return false;
-  const validade = moment(`${doacao.validade} 23:59`, "DD/MM/YYYY HH:mm");
-  if (validade.diff(moment()) < 0) return false;
+const canDefineAsCanceled = (donation: Donation) => {
+  if (donation.cancellation) return false;
+  if (donation.isDelivered) return false;
+  const expiration = moment(`${donation.expiration} 23:59`, "DD/MM/YYYY HH:mm");
+  if (expiration.diff(moment()) < 0) return false;
   return true;
 };
 
 onMounted(() => {
   if (modalEl.value) {
     modalEl.value.addEventListener("hidden.bs.modal", () => {
-      motivoCancelamento.value = "";
-      modalDoacao.value = null;
+      cancelReason.value = "";
+      modalDonation.value = null;
     });
   }
 });
 
-const showMotivoModal = (doacao: Doacao) => {
-  motivoCancelamento.value = "";
-  modalDoacao.value = doacao;
+const showMotivoModal = (donation: Donation) => {
+  cancelReason.value = "";
+  modalDonation.value = donation;
   if (modalEl.value) {
     const modal = new Modal(modalEl.value);
     modal.show();
   }
 };
 
-const defineAsCancelada = async () => {
-  if (modalDoacao.value) {
+const defineAsCanceled = async () => {
+  if (modalDonation.value) {
     $loading.startLoading();
-    await $doacaoRepo.setDoacaoCancelada(
-      modalDoacao.value,
-      motivoCancelamento.value
-    );
+    await $donationRepo.setAsCanceled(modalDonation.value, cancelReason.value);
     $loading.stopLoading();
   }
 };
@@ -99,40 +96,40 @@ const defineAsCancelada = async () => {
 <template>
   <div>
     <h3 class="pb-3">Minhas Doações</h3>
-    <p v-if="doacoes.length == 0">No momento não há doaçoes efetuadas...</p>
-    <div class="card mb-3" v-for="doacao in doacoes" :key="doacao.id">
+    <p v-if="donations.length == 0">No momento não há doaçoes efetuadas...</p>
+    <div class="card mb-3" v-for="donation in donations" :key="donation.id">
       <div class="row g-0">
         <div class="col-md-4">
           <AsyncImg
-            v-if="doacao.linkFoto"
-            :src="() => $doacaoRepo.getFotoLink(doacao.linkFoto!)"
+            v-if="donation.photoUrl"
+            :src="() => $donationRepo.getPhotoUrl(donation.photoUrl!)"
             class="img-fluid rounded-top rounded-md-start"
           />
         </div>
         <div class="col-md-8">
           <div class="card-body">
-            <h5 class="card-title">{{ doacao.descricao }}</h5>
+            <h5 class="card-title">{{ donation.description }}</h5>
             <h6 class="card-text">
-              Data da Doação: {{ doacao.dataDoacao?.toLocaleDateString() }}
+              Data da Doação: {{ donation.createdAt?.toLocaleDateString() }}
             </h6>
-            <h6 v-if="!doacao.entregue" class="card-text">
-              Validade: {{ doacao.validade }}
+            <h6 v-if="!donation.isDelivered" class="card-text">
+              Validade: {{ donation.expiration }}
             </h6>
-            <h6 v-if="doacao.idConsumidor" class="card-text">
-              Destino: {{ consumerNameById(doacao.idConsumidor) }}
+            <h6 v-if="donation.beneficiaryId" class="card-text">
+              Destino: {{ beneficiaryNameById(donation.beneficiaryId) }}
             </h6>
-            <h6 class="card-text">Situação: {{ doacaoSituacao(doacao) }}</h6>
+            <h6 class="card-text">Situação: {{ donationStatus(donation) }}</h6>
             <div class="d-grid gap-2 d-md-block">
               <a
-                @click="() => defineAsEntregue(doacao)"
+                @click="() => defineAsDelivered(donation)"
                 class="btn btn-success me-md-2"
-                v-if="canDefineAsEntregue(doacao)"
+                v-if="canDefineAsDelivered(donation)"
               >
                 Marcar como Entregue
               </a>
               <a
-                @click="() => showMotivoModal(doacao)"
-                v-if="canDefineAsCancelada(doacao)"
+                @click="() => showMotivoModal(donation)"
+                v-if="canDefineAsCanceled(donation)"
                 class="btn btn-danger"
               >
                 Cancelar Doação
@@ -162,7 +159,7 @@ const defineAsCancelada = async () => {
                 Escreva o motivo do cancelamento da doação.
               </label>
               <textarea
-                v-model="motivoCancelamento"
+                v-model="cancelReason"
                 class="form-control"
                 id="motivoInput"
               />
@@ -181,8 +178,8 @@ const defineAsCancelada = async () => {
             type="button"
             class="btn btn-danger"
             data-bs-dismiss="modal"
-            @click="defineAsCancelada"
-            :disabled="motivoCancelamento.length == 0"
+            @click="defineAsCanceled"
+            :disabled="cancelReason.length == 0"
           >
             Cancelar Doação
           </button>

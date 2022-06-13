@@ -1,5 +1,5 @@
 import { auth, db } from "@/firebase";
-import type { StatusAutorizacao, UserInfo } from "@/models/user-info";
+import type { AuthorizationStatus, UserInfo } from "@/models/user-info";
 import {
   setDoc,
   collection,
@@ -12,16 +12,16 @@ import {
 } from "firebase/firestore";
 import { onUnmounted, ref } from "vue";
 
-const userInfoCollectionRef = collection(db, "userInfo");
+const collectionRef = collection(db, "userInfo");
 
 export const useUserInfoRepo = () => ({
-  useDonatorsInfo() {
+  get donorsInfo$() {
     const donators = ref<UserInfo[]>([]);
     const q = query(
-      userInfoCollectionRef,
-      where("doador", "==", true),
+      collectionRef,
+      where("isDonor", "==", true),
       where("status", "==", 1),
-      orderBy("nome")
+      orderBy("name")
     );
     const close = onSnapshot(q, (snapshot) => {
       donators.value = snapshot.docs.map((doc) => ({
@@ -33,30 +33,30 @@ export const useUserInfoRepo = () => ({
     return donators;
   },
 
-  useConsumersInfo() {
-    const consumers = ref<UserInfo[]>([]);
+  get beneficiariesInfo$() {
+    const beneficiaries = ref<UserInfo[]>([]);
     const q = query(
-      userInfoCollectionRef,
-      where("consumidor", "==", true),
+      collectionRef,
+      where("isbeneficiary", "==", true),
       where("status", "==", 1),
-      orderBy("nome")
+      orderBy("name")
     );
     const close = onSnapshot(q, (snapshot) => {
-      consumers.value = snapshot.docs.map((doc) => ({
+      beneficiaries.value = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...(doc.data() as UserInfo),
       }));
     });
     onUnmounted(close);
-    return consumers;
+    return beneficiaries;
   },
 
-  useUsersInfo() {
+  get usersInfo$() {
     const users = ref<UserInfo[]>([]);
     const q = query(
-      userInfoCollectionRef,
-      where("admin", "==", false),
-      orderBy("nome")
+      collectionRef,
+      where("isAdmin", "==", false),
+      orderBy("name")
     );
     const close = onSnapshot(q, (snapshot) => {
       users.value = snapshot.docs.map((doc) => ({
@@ -68,11 +68,11 @@ export const useUserInfoRepo = () => ({
     return users;
   },
 
-  async getUserInfo() {
+  async getCurrentUserInfo() {
     const userId = auth.currentUser?.uid;
 
     if (userId) {
-      const docRef = doc(userInfoCollectionRef, userId);
+      const docRef = doc(collectionRef, userId);
       const userInfoDoc = await getDoc(docRef);
 
       if (!userInfoDoc.exists()) {
@@ -85,19 +85,19 @@ export const useUserInfoRepo = () => ({
     }
   },
 
-  async createUserInfo(userInfo: UserInfo) {
+  async create(userInfo: UserInfo) {
     const userId = auth.currentUser?.uid;
 
     if (userId) {
-      const docRef = doc(userInfoCollectionRef, userId);
+      const docRef = doc(collectionRef, userId);
       return await setDoc(docRef, userInfo);
     } else {
       throw Error("Usuário não autenticado.");
     }
   },
 
-  async setUserStatus(userInfo: UserInfo, status: StatusAutorizacao) {
-    const docRef = doc(userInfoCollectionRef, userInfo.id);
+  async setStatus(userInfo: UserInfo, status: AuthorizationStatus) {
+    const docRef = doc(collectionRef, userInfo.id);
     userInfo.status = status;
     setDoc(docRef, userInfo);
   },
