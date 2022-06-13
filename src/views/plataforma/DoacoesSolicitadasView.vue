@@ -121,7 +121,7 @@ const defineAsCancelada = async (doacao: Doacao) => {
               Validade: {{ doacao.validade }}
             </h6>
             <h6 v-if="doacao.idDoador" class="card-text">
-              Destino: {{ donatorNameById(doacao.idDoador) }}
+              Doador: {{ donatorNameById(doacao.idDoador) }}
             </h6>
             <h6 v-if="doacao.idDoador" class="card-text">
               Cidade: {{ donatorCityById(doacao.idDoador) }}
