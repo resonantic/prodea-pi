@@ -3,6 +3,7 @@ import { onBeforeMount, ref } from "vue";
 import { RouterView } from "vue-router";
 import { useAuthStore } from "./stores/auth-store";
 import ToastWrapper from "@/components/ToastWrapper.vue";
+import ModalWrapper from "./components/ModalWrapper.vue";
 import { useLoadingStore } from "./stores/loading-store";
 
 const $auth = useAuthStore();
@@ -20,6 +21,7 @@ onBeforeMount(async () => {
 <template>
   <RouterView v-if="!isLoading" />
   <ToastWrapper v-if="!isLoading" />
+  <ModalWrapper v-if="!isLoading" />
   <div
     class="full-loader d-flex justify-content-center align-items-center"
     v-if="$loading.isLoading || isLoading"

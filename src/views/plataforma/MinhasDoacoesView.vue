@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import AsyncImg from "@/components/AsyncImg.vue";
+import { openCancelDonationModal, openUserInfoModal } from "@/helpers/modal";
 import type { Donation } from "@/models/donation";
 import { useDonationRepo } from "@/repositories/donation-repo";
 import { useUserInfoRepo } from "@/repositories/user-info-repo";
 import { useLoadingStore } from "@/stores/loading-store";
-import { Modal } from "bootstrap";
 import moment from "moment";
 import { onMounted, ref, type VNodeRef } from "vue";
 
@@ -75,21 +75,17 @@ onMounted(() => {
   }
 });
 
-const showMotivoModal = (donation: Donation) => {
-  cancelReason.value = "";
-  modalDonation.value = donation;
-  if (modalEl.value) {
-    const modal = new Modal(modalEl.value);
-    modal.show();
-  }
+const showCancelDonationModal = (donation: Donation) => {
+  openCancelDonationModal(async (value) => {
+    $loading.startLoading();
+    await $donationRepo.setAsCanceled(donation, value);
+    $loading.stopLoading();
+  });
 };
 
-const defineAsCanceled = async () => {
-  if (modalDonation.value) {
-    $loading.startLoading();
-    await $donationRepo.setAsCanceled(modalDonation.value, cancelReason.value);
-    $loading.stopLoading();
-  }
+const showUserInfoModal = (id: string) => {
+  const userInfo = beneficiaries.value.find((c) => c.id == id);
+  if (userInfo) openUserInfoModal(userInfo);
 };
 </script>
 
@@ -117,6 +113,12 @@ const defineAsCanceled = async () => {
             </h6>
             <h6 v-if="donation.beneficiaryId" class="card-text">
               Destino: {{ beneficiaryNameById(donation.beneficiaryId) }}
+              <a
+                style="cursor: pointer"
+                @click="() => showUserInfoModal(donation.beneficiaryId!)"
+              >
+                <i class="bi bi-info-circle"></i>
+              </a>
             </h6>
             <h6 class="card-text">Situação: {{ donationStatus(donation) }}</h6>
             <div class="d-grid gap-2 d-md-block">
@@ -128,7 +130,7 @@ const defineAsCanceled = async () => {
                 Marcar como Entregue
               </a>
               <a
-                @click="() => showMotivoModal(donation)"
+                @click="() => showCancelDonationModal(donation)"
                 v-if="canDefineAsCanceled(donation)"
                 class="btn btn-danger"
               >
@@ -136,53 +138,6 @@ const defineAsCanceled = async () => {
               </a>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div ref="modalEl" class="modal fade" tabindex="-1">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Cancelar Doação</h5>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
-        </div>
-        <div class="modal-body">
-          <form>
-            <div class="mb-3">
-              <label for="motivoInput" class="col-form-label">
-                Escreva o motivo do cancelamento da doação.
-              </label>
-              <textarea
-                v-model="cancelReason"
-                class="form-control"
-                id="motivoInput"
-              />
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button
-            type="button"
-            class="btn btn-secondary"
-            data-bs-dismiss="modal"
-          >
-            Voltar
-          </button>
-          <button
-            type="button"
-            class="btn btn-danger"
-            data-bs-dismiss="modal"
-            @click="defineAsCanceled"
-            :disabled="cancelReason.length == 0"
-          >
-            Cancelar Doação
-          </button>
         </div>
       </div>
     </div>

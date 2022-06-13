@@ -37,7 +37,7 @@ export const useUserInfoRepo = () => ({
     const beneficiaries = ref<UserInfo[]>([]);
     const q = query(
       collectionRef,
-      where("isbeneficiary", "==", true),
+      where("isBeneficiary", "==", true),
       where("status", "==", 1),
       orderBy("name")
     );

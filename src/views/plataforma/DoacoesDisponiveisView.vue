@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AsyncImg from "@/components/AsyncImg.vue";
+import { openUserInfoModal } from "@/helpers/modal";
 import type { Donation } from "@/models/donation";
 import { useDonationRepo } from "@/repositories/donation-repo";
 import { useUserInfoRepo } from "@/repositories/user-info-repo";
@@ -11,7 +12,7 @@ const $donationRepo = useDonationRepo();
 const $userInfoRepo = useUserInfoRepo();
 const $loading = useLoadingStore();
 
-const donators = $userInfoRepo.donorsInfo$;
+const donors = $userInfoRepo.donorsInfo$;
 const donations = $donationRepo.availableDonations$;
 
 const filter = ref<string>("");
@@ -34,12 +35,12 @@ const filteredDonations = computed<Donation[]>(() =>
 );
 
 const donatorNameById = (id: string) => {
-  const donator = donators.value.find((c) => c.id == id);
+  const donator = donors.value.find((c) => c.id == id);
   return donator?.name;
 };
 
 const donatorCityById = (id: string) => {
-  const donator = donators.value.find((c) => c.id == id);
+  const donator = donors.value.find((c) => c.id == id);
   return donator?.city;
 };
 
@@ -47,6 +48,11 @@ const defineAsRequested = async (donation: Donation) => {
   $loading.startLoading();
   await $donationRepo.setAsRequested(donation);
   $loading.stopLoading();
+};
+
+const showUserInfoModal = (id: string) => {
+  const userInfo = donors.value.find((c) => c.id == id);
+  if (userInfo) openUserInfoModal(userInfo);
 };
 </script>
 
@@ -94,6 +100,12 @@ const defineAsRequested = async (donation: Donation) => {
             </h6>
             <h6 v-if="donation.donorId" class="card-text">
               Doador: {{ donatorNameById(donation.donorId) }}
+              <a
+                style="cursor: pointer"
+                @click="() => showUserInfoModal(donation.donorId!)"
+              >
+                <i class="bi bi-info-circle"></i>
+              </a>
             </h6>
             <h6 v-if="donation.donorId" class="card-text">
               Cidade: {{ donatorCityById(donation.donorId) }}

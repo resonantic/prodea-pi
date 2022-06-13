@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AsyncImg from "@/components/AsyncImg.vue";
+import { openUserInfoModal } from "@/helpers/modal";
 import type { Donation } from "@/models/donation";
 import { useDonationRepo } from "@/repositories/donation-repo";
 import { useUserInfoRepo } from "@/repositories/user-info-repo";
@@ -84,6 +85,11 @@ const defineAsUnrequested = async (donation: Donation) => {
   await $donationRepo.setAsUnrequested(donation);
   $loading.stopLoading();
 };
+
+const showUserInfoModal = (id: string) => {
+  const userInfo = donors.value.find((c) => c.id == id);
+  if (userInfo) openUserInfoModal(userInfo);
+};
 </script>
 
 <template>
@@ -126,6 +132,12 @@ const defineAsUnrequested = async (donation: Donation) => {
             </h6>
             <h6 v-if="donation.donorId" class="card-text">
               Doador: {{ donorNameById(donation.donorId) }}
+              <a
+                style="cursor: pointer"
+                @click="() => showUserInfoModal(donation.donorId!)"
+              >
+                <i class="bi bi-info-circle"></i>
+              </a>
             </h6>
             <h6 v-if="donation.donorId" class="card-text">
               Cidade: {{ donorCityById(donation.donorId) }}
